@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
 import SearchPage from "./pages/SearchPage";
 import AboutPage from "./pages/AboutPage";
+import DonorListPage from "./pages/DonorListPage";
 import ContactPage from "./pages/ContactPage";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="/search" element={<SearchPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/donors" element={<DonorListPage />} /> {/* ← new route */}
           </Routes>
         </main>
         <Footer />
