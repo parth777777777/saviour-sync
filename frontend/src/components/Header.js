@@ -1,10 +1,8 @@
 import { NavLink } from "react-router-dom";
-import logo from "../assets/logo.png"; // ✅ Import your logo
+import logo from "../assets/logo.png"; // ✅ Your logo
 
 const Header = () => {
-  const linkClasses =
-    "px-3 py-2 rounded-md font-medium transition duration-200";
-
+  const linkClasses = "px-3 py-2 rounded-md font-medium transition duration-200";
   const activeClasses = "bg-white text-red-700 shadow-md"; // active tab style
   const inactiveClasses = "text-white hover:bg-red-600";
 
@@ -14,7 +12,7 @@ const Header = () => {
         {/* Logo + Brand */}
         <NavLink to="/" className="flex items-center space-x-2">
           <img
-            src={logo} // ✅ using imported logo
+            src={logo}
             alt="SaviourSync Logo"
             className="h-12 w-auto relative top-1"
           />
@@ -62,6 +60,14 @@ const Header = () => {
             }
           >
             Contact
+          </NavLink>
+          <NavLink
+            to="/login"  // ✅ Single login page
+            className={({ isActive }) =>
+              `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`
+            }
+          >
+            Login
           </NavLink>
         </nav>
       </div>
