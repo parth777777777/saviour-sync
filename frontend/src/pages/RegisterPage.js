@@ -1,14 +1,32 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Select from "../components/Select";
+import LocationInput from "../components/LocationInput";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     location: "",
+    locationCoords: { type: "Point", coordinates: [] },
     bloodGroup: "",
-    organ: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    } else {
+      const email = localStorage.getItem("email");
+      if (email) setFormData((prev) => ({ ...prev, email }));
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,119 +34,121 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/donors/register", {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("You must be logged in to register a donor");
+
+      const response = await fetch("http://localhost:5000/api/donors", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to register donor");
 
-      if (res.ok) {
-        alert(data.message);
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          location: "",
-          bloodGroup: "",
-          organ: "",
-        });
-      } else {
-        alert(data.message || "Registration failed");
-      }
+      navigate("/search");
     } catch (err) {
-      console.error(err);
-      alert("Server error");
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-        Register as a Donor
-      </h2>
-      <form
-        className="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md space-y-4"
-        onSubmit={handleSubmit}
-      >
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          className="w-full p-3 border rounded-lg"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          className="w-full p-3 border rounded-lg"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="tel"
-          name="phone"
-          placeholder="Phone Number"
-          className="w-full p-3 border rounded-lg"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="location"
-          placeholder="Location"
-          className="w-full p-3 border rounded-lg"
-          value={formData.location}
-          onChange={handleChange}
-          required
-        />
+    <div className="min-h-screen bg-gradient-to-b from-red-50 via-red-100 to-white flex items-center justify-center py-10 px-4">
+      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-lg">
+        <h1 className="text-3xl font-extrabold text-red-700 text-center mb-8">
+          Register as a Donor
+        </h1>
 
-        <select
-          name="bloodGroup"
-          className="w-full p-3 border rounded-lg"
-          value={formData.bloodGroup}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Blood Type</option>
-          {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
+        {error && (
+          <p className="text-center text-red-700 font-semibold mb-6">{error}</p>
+        )}
 
-        <select
-          name="organ"
-          className="w-full p-3 border rounded-lg"
-          value={formData.organ}
-          onChange={handleChange}
-        >
-          <option value="">Select Organ (if applicable)</option>
-          {["Kidney", "Liver", "Heart", "Lungs", "Pancreas", "Eyes"].map(
-            (org) => (
-              <option key={org} value={org}>
-                {org}
-              </option>
-            )
-          )}
-        </select>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700"
-        >
-          Register
-        </button>
-      </form>
+          {/* Email */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="Enter email"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Phone</label>
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              placeholder="Enter phone number"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+            />
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Location</label>
+            <LocationInput
+              value={formData.location}
+              onSelect={({ address, lat, lng }) =>
+                setFormData({
+                  ...formData,
+                  location: address,
+                  locationCoords: { type: "Point", coordinates: [lng, lat] },
+                })
+              }
+            />
+          </div>
+
+          {/* Blood Group */}
+          <Select
+            label="Blood Group"
+            options={bloodGroups}
+            value={formData.bloodGroup}
+            onChange={(e) =>
+              setFormData({ ...formData, bloodGroup: e.target.value })
+            }
+          />
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-red-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-red-700 transition"
+          >
+            {loading ? "Submitting..." : "Register"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
