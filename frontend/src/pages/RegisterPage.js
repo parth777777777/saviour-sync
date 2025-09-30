@@ -64,7 +64,7 @@ const RegisterPage = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center py-10 px-4">
       {/* Title moved outside the card */}
-      <h1 className="text-3xl font-bold text-red-700 text-center mb-8">
+      <h1 className="text-3xl font-bold text-700 text-center mb-8">
         Register as a Donor
       </h1>
 
