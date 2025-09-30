@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -36,16 +37,30 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-32 px-4">
-      <h2 className="text-4xl font-extrabold text-red-700 mb-4 text-center">
+    <motion.div
+      className="bg-gray-50 min-h-screen pt-32 px-4"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-4xl font-bold text--700 mb-4 text-center"
+      >
         Contact Us
-      </h2>
+      </motion.h2>
+
       <p className="text-center text-gray-600 max-w-2xl mx-auto mb-8">
         We'd love to hear from you! Questions, feedback, or stories – reach out and we'll respond as soon as possible.
       </p>
 
-      <form
+      <motion.form
         onSubmit={handleSubmit}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
         className="max-w-lg mx-auto bg-white p-10 rounded-2xl shadow-xl space-y-6"
       >
         <input
@@ -93,8 +108,8 @@ const ContactPage = () => {
         >
           {loading ? "Sending..." : "Send Message"}
         </button>
-      </form>
-    </div>
+      </motion.form>
+    </motion.div>
   );
 };
 
