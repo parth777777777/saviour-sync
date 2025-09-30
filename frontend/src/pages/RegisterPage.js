@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "../components/Select";
 import LocationInput from "../components/LocationInput";
+import { motion } from "framer-motion";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -63,12 +64,23 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center py-10 px-4">
-      {/* Title moved outside the card */}
-      <h1 className="text-3xl font-bold text-700 text-center mb-8">
+      {/* Title with simple fade-in */}
+      <motion.h1
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-3xl font-bold text-700 text-center mb-8"
+      >
         Register as a Donor
-      </h1>
+      </motion.h1>
 
-      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-lg">
+      {/* Card with subtle scale and fade-in */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-lg"
+      >
         {error && (
           <p className="text-center text-red-700 font-semibold mb-6">{error}</p>
         )}
@@ -149,7 +161,7 @@ const RegisterPage = () => {
             {loading ? "Submitting..." : "Register"}
           </button>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };
