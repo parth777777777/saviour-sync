@@ -1,14 +1,15 @@
 import React, { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Header from "../components/Header"; // use the existing Header component
+import { motion } from "framer-motion";
+import Header from "../components/Header";
+import { FaHeartbeat, FaHospital, FaSyringe } from "react-icons/fa";
+import { GiBlood } from "react-icons/gi";
 
 const Home = () => {
   const sectionsRef = useRef([]);
 
-  // Auto-scroll handler
   useEffect(() => {
     let isScrolling = false;
-
     const handleWheel = (e) => {
       e.preventDefault();
       if (isScrolling) return;
@@ -32,7 +33,7 @@ const Home = () => {
         sectionsRef.current[nextIndex].scrollIntoView({ behavior: "smooth" });
         setTimeout(() => {
           isScrolling = false;
-        }, 800); // animation duration
+        }, 800);
       }
     };
 
@@ -40,80 +41,177 @@ const Home = () => {
     return () => window.removeEventListener("wheel", handleWheel);
   }, []);
 
-  // Height of fixed header
-  const headerHeight = 80; // adjust if your Header component height changes
+  const headerHeight = 80;
 
-return (
-  <div className="relative">
-    <Header />
+  return (
+    <div className="relative bg-white text-gray-900 overflow-hidden">
+      <Header />
 
-    {/* Hero Section */}
-    <section
-      ref={(el) => (sectionsRef.current[0] = el)}
-      className="h-screen bg-gradient-to-b from-red-700 to-red-600 text-white flex flex-col justify-center items-center text-center px-6 transition-all duration-700 ease-in-out"
-      style={{ paddingTop: `${headerHeight}px` }}
-    >
-      <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-4">
-        Connect. Donate. Save Lives.
-      </h1>
-      <p className="text-xl md:text-2xl mb-10 max-w-2xl opacity-90">
-        SaviourSync links donors to recipients instantly — your blood could be the difference between life and death.
-      </p>
-    </section>
-
-    {/* Features Section */}
-    <section
-      ref={(el) => (sectionsRef.current[1] = el)}
-      className="h-screen bg-gray-50 flex flex-col justify-center items-center px-6"
-      style={{ paddingTop: `${headerHeight}px` }}
-    >
-      <h2 className="text-3xl font-bold text-red-700 mb-12 text-center">
-        Why Choose SaviourSync?
-      </h2>
-      <div className="grid md:grid-cols-3 gap-10 max-w-6xl">
-        <div className="p-8 bg-white shadow-md rounded-2xl hover:shadow-xl transition text-center">
-          <h3 className="text-xl font-semibold mb-3">⚡ Fast Matching</h3>
-          <p className="text-gray-600">
-            Smart system finds compatible donors in minutes, cutting precious response time in emergencies.
-          </p>
-        </div>
-        <div className="p-8 bg-white shadow-md rounded-2xl hover:shadow-xl transition text-center">
-          <h3 className="text-xl font-semibold mb-3">❤️ Life-Saving Impact</h3>
-          <p className="text-gray-600">
-            Every registered donor increases survival chances for patients in critical need.
-          </p>
-        </div>
-        <div className="p-8 bg-white shadow-md rounded-2xl hover:shadow-xl transition text-center">
-          <h3 className="text-xl font-semibold mb-3">🌍 Community Driven</h3>
-          <p className="text-gray-600">
-            Join a network of donors and hospitals working together to save lives daily.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    {/* CTA Section */}
-    <section
-      ref={(el) => (sectionsRef.current[2] = el)}
-      className="h-screen bg-red-50 text-red-700 flex flex-col justify-center items-center px-6"
-      style={{ paddingTop: `${headerHeight}px` }}
-    >
-      <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">
-        Be a Life Saver. Anytime, Anywhere.
-      </h2>
-      <p className="text-lg md:text-xl mb-8 max-w-2xl text-center">
-        Register as a donor today — your donation could save someone’s life in minutes.
-      </p>
-      <Link
-        to="/register"
-        className="bg-red-700 text-white px-9 py-4 rounded-xl font-semibold shadow hover:bg-red-800 transition"
+      {/* Floating Health Icons */}
+      <motion.div
+        className="absolute top-10 left-16 text-red-600 opacity-30 text-4xl"
+        animate={{ y: [0, -30, 0], rotate: [0, 15, 0] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       >
-        Get Started
-      </Link>
-    </section>
-  </div>
-);
-};
+        <FaHeartbeat />
+      </motion.div>
 
+      <motion.div
+        className="absolute bottom-24 right-20 text-red-500 opacity-25 text-5xl"
+        animate={{ y: [0, 40, 0], rotate: [0, -20, 0] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <GiBlood />
+      </motion.div>
+
+      <motion.div
+        className="absolute top-1/3 right-1/4 text-red-400 opacity-30 text-4xl"
+        animate={{ x: [0, 50, 0], rotate: [0, 10, 0] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <FaSyringe />
+      </motion.div>
+
+      <motion.div
+        className="absolute top-1/2 left-1/3 text-red-600 opacity-20 text-5xl"
+        animate={{ y: [0, 25, 0], rotate: [0, -10, 0] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <FaHospital />
+      </motion.div>
+
+      {/* Hero Section */}
+      <section
+        ref={(el) => (sectionsRef.current[0] = el)}
+        className="relative h-screen flex flex-col justify-center items-center text-center px-6"
+        style={{ paddingTop: `${headerHeight}px` }}
+      >
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-5xl md:text-6xl font-extrabold leading-tight mb-6"
+        >
+          Connect. Donate. Save Lives.
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="text-lg md:text-xl mb-10 max-w-2xl opacity-90"
+        >
+          SaviourSync links donors to recipients instantly — your blood could be
+          the difference between life and death.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
+          <Link
+            to="/register"
+            className="bg-red-600 text-white px-8 py-4 rounded-xl font-semibold shadow hover:bg-red-700 transition"
+          >
+            Join as a Donor
+          </Link>
+        </motion.div>
+      </section>
+
+      {/* Features Section */}
+      <section
+        ref={(el) => (sectionsRef.current[1] = el)}
+        className="h-screen flex flex-col justify-center items-center px-6 bg-gray-50 relative z-10"
+        style={{ paddingTop: `${headerHeight}px` }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-3xl md:text-4xl font-bold text-red-700 mb-14 text-center"
+        >
+          Why Choose SaviourSync?
+        </motion.h2>
+
+        <div className="grid md:grid-cols-3 gap-10 max-w-6xl">
+          {[
+            {
+              icon: "⚡",
+              color: "text-red-600",
+              title: "Fast Matching",
+              desc: "Smart system finds compatible donors in minutes, cutting response time in emergencies.",
+            },
+            {
+              icon: "❤️",
+              color: "text-pink-600",
+              title: "Life-Saving Impact",
+              desc: "Every registered donor increases survival chances for patients in critical need.",
+            },
+            {
+              icon: "🌍",
+              color: "text-green-600",
+              title: "Community Driven",
+              desc: "Join a network of donors and hospitals working together to save lives daily.",
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.2, duration: 0.8 }}
+              className="p-8 bg-white shadow-lg rounded-2xl hover:shadow-xl transition flex flex-col items-center text-center"
+            >
+              <div className="bg-white rounded-full p-4 shadow-md mb-4">
+                <span className={`${item.color} text-3xl`}>{item.icon}</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+              <p className="text-gray-600">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section
+        ref={(el) => (sectionsRef.current[2] = el)}
+        className="h-screen flex flex-col justify-center items-center px-6 bg-white relative z-10"
+        style={{ paddingTop: `${headerHeight}px` }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-3xl md:text-4xl font-bold mb-6 text-center text-gray-900"
+        >
+          Be a Life Saver. Anytime, Anywhere.
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="text-lg md:text-xl mb-8 max-w-2xl text-center text-gray-600"
+        >
+          Register as a donor today — your donation could save someone’s life in
+          minutes.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
+          <Link
+            to="/register"
+            className="bg-red-600 text-white px-10 py-4 rounded-xl font-semibold shadow hover:bg-red-700 transition"
+          >
+            Get Started
+          </Link>
+        </motion.div>
+      </section>
+    </div>
+  );
+};
 
 export default Home;
