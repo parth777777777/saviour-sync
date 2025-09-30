@@ -106,6 +106,47 @@ const About = () => {
         </div>
       </section>
 
+      {/* Guidelines Section */}
+      <section className="bg-gray-50 py-[10vh] px-6">
+        <h2 className="text-3xl font-bold text-red-700 mb-8 text-center font-poppins">
+          Donation Guidelines
+        </h2>
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
+          <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+            <h3 className="text-xl font-semibold text-red-700 mb-3 font-poppins">✅ Before Donating</h3>
+            <ul className="list-disc list-inside text-gray-700 space-y-2 font-inter">
+              <li>Ensure you are at least 18 years old and in good health.</li>
+              <li>Eat a healthy meal and stay hydrated before donation.</li>
+              <li>Avoid alcohol or smoking at least 24 hours before donating.</li>
+            </ul>
+          </div>
+          <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+            <h3 className="text-xl font-semibold text-red-700 mb-3 font-poppins">🩸 During Donation</h3>
+            <ul className="list-disc list-inside text-gray-700 space-y-2 font-inter">
+              <li>Bring a valid ID for verification.</li>
+              <li>Stay calm and relaxed — the process is safe and supervised.</li>
+              <li>Inform staff if you feel uneasy or unwell.</li>
+            </ul>
+          </div>
+          <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+            <h3 className="text-xl font-semibold text-red-700 mb-3 font-poppins">🍎 After Donation</h3>
+            <ul className="list-disc list-inside text-gray-700 space-y-2 font-inter">
+              <li>Rest for 10–15 minutes before leaving.</li>
+              <li>Drink plenty of fluids and eat iron-rich foods.</li>
+              <li>Avoid heavy exercise for the next 24 hours.</li>
+            </ul>
+          </div>
+          <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+            <h3 className="text-xl font-semibold text-red-700 mb-3 font-poppins">⚠️ Who Should Avoid</h3>
+            <ul className="list-disc list-inside text-gray-700 space-y-2 font-inter">
+              <li>People with recent infections, surgeries, or chronic illnesses.</li>
+              <li>Anyone weighing under 50kg or under 18 years of age.</li>
+              <li>Individuals who recently received vaccinations (check guidelines).</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section className="max-w-4xl mx-auto py-[10vh] px-6">
         <h2 className="text-3xl font-bold text-red-700 mb-8 text-center font-poppins">
