@@ -69,7 +69,7 @@ const RegisterPage = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-3xl font-bold text-700 text-center mb-8"
+        className="text-3xl font-bold text-700 text-center mb-4"
       >
         Register as a Donor
       </motion.h1>
