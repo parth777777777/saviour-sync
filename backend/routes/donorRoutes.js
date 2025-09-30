@@ -61,7 +61,7 @@ router.get("/search", async (req, res) => {
   const { lat, lng, type, value } = req.query;
   if (!lat || !lng) return res.status(400).json({ message: "Coordinates required" });
 
-  const radiusMeters = 50 * 1000; // 500 km
+  const radiusMeters = 50 * 1000; // 50 km
 
   try {
     // --- Fetch donors matching type/value ---

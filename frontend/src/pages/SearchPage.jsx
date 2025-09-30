@@ -19,6 +19,7 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false); // 🔹 new state
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
   const organs = ["Kidney", "Liver", "Heart", "Lungs", "Pancreas", "Eyes"];
@@ -36,6 +37,9 @@ const SearchPage = () => {
     if (urlType) setType(urlType);
     if (urlValue) setValue(urlValue);
     if (urlLocation) setLocationValue(urlLocation);
+
+    // If query params exist → already searched
+    if (urlValue || urlLocation) setHasSearched(true);
   }, [locationHook.search]);
 
   const fetchResults = async () => {
@@ -67,6 +71,7 @@ const SearchPage = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setHasSearched(true); // 🔹 switch to horizontal after first search
     fetchResults();
 
     const searchParams = new URLSearchParams({
@@ -175,23 +180,22 @@ const SearchPage = () => {
   );
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-b from-red-50 via-red-100 to-white py-10 px-4 relative"
-      style={{ paddingTop: "calc(8rem + env(safe-area-inset-top))" }}
-    >
-      {/* ensures content starts below fixed header */}
-
+    <div className="min-h-screen bg-gradient-to-b from-red-50 via-red-100 to-white py-10 px-4 relative">
       <h2 className="text-4xl font-extrabold text-red-700 text-center mb-10">
         Search Donors, Blood Banks & Hospitals
       </h2>
 
+      {/* 🔹 Switch layout based on hasSearched */}
       <form
         onSubmit={handleSearchSubmit}
-        className="flex flex-col md:flex-row gap-4 mb-10 justify-center items-start bg-white p-6 rounded-2xl shadow-lg max-w-5xl mx-auto"
+        className={`gap-4 mb-10 bg-white p-6 rounded-2xl shadow-lg max-w-5xl mx-auto 
+        ${hasSearched ? "flex flex-row items-end" : "flex flex-col"}`}
       >
         {/* Location Input */}
         <div className="flex-1 flex flex-col">
-          <label className="block text-gray-700 font-medium mb-2">Location</label>
+          {!hasSearched && (
+            <label className="block text-gray-700 font-medium mb-2">Location</label>
+          )}
           <LocationInput
             value={locationValue}
             onSelect={({ address, lat, lng }) => {
@@ -204,7 +208,9 @@ const SearchPage = () => {
 
         {/* Type */}
         <div className="flex-1 flex flex-col">
-          <label className="block text-gray-700 font-medium mb-2">Type</label>
+          {!hasSearched && (
+            <label className="block text-gray-700 font-medium mb-2">Type</label>
+          )}
           <select
             value={type}
             onChange={(e) => {
@@ -220,7 +226,9 @@ const SearchPage = () => {
 
         {/* Value */}
         <div className="flex-1 flex flex-col">
-          <label className="block text-gray-700 font-medium mb-2">Value</label>
+          {!hasSearched && (
+            <label className="block text-gray-700 font-medium mb-2">Value</label>
+          )}
           <Select
             label=""
             options={type === "blood" ? bloodGroups : organs}
@@ -231,19 +239,21 @@ const SearchPage = () => {
         </div>
 
         {/* Filter */}
-        <div className="flex-1 flex flex-col">
-          <label className="block text-gray-700 font-medium mb-2">Show</label>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="w-full p-3 h-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
-          >
-            <option value="both">All</option>
-            <option value="donor">Donors Only</option>
-            <option value="bloodbank">Blood Banks Only</option>
-            <option value="hospital">Hospitals Only</option>
-          </select>
-        </div>
+        {!hasSearched && (
+          <div className="flex-1 flex flex-col">
+            <label className="block text-gray-700 font-medium mb-2">Show</label>
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="w-full p-3 h-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
+            >
+              <option value="both">All</option>
+              <option value="donor">Donors Only</option>
+              <option value="bloodbank">Blood Banks Only</option>
+              <option value="hospital">Hospitals Only</option>
+            </select>
+          </div>
+        )}
 
         {/* Submit */}
         <div className="flex items-end">
@@ -264,7 +274,7 @@ const SearchPage = () => {
       {error && (
         <div className="text-center text-red-700 font-semibold mb-4">{error}</div>
       )}
-      {results.length === 0 && !loading && !error && (
+      {results.length === 0 && !loading && !error && hasSearched && (
         <p className="text-center text-gray-500">No results found.</p>
       )}
 
