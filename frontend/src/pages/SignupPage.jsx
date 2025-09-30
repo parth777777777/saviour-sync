@@ -68,7 +68,7 @@ const SignupPage = () => {
         className="bg-white p-10 rounded-xl shadow-md w-full max-w-md"
         onSubmit={handleSignup}
       >
-        <h2 className="text-2xl font-bold text-red-700 mb-6 text-center">
+        <h2 className="text-2xl font-bold text-black-700 mb-6 text-center">
           Create Account
         </h2>
 
