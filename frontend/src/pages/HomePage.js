@@ -95,7 +95,7 @@ return (
     {/* CTA Section */}
     <section
       ref={(el) => (sectionsRef.current[2] = el)}
-      className="h-screen bg-red-100 text-red-700 flex flex-col justify-center items-center px-6"
+      className="h-screen bg-red-50 text-red-700 flex flex-col justify-center items-center px-6"
       style={{ paddingTop: `${headerHeight}px` }}
     >
       <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">
