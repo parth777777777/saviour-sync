@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { FaMapMarkerAlt, FaTint, FaHeartbeat, FaPhone, FaHospital } from "react-icons/fa";
 import Select from "../components/Select";
 import LocationInput from "../components/LocationInput";
-import { ResultCard, DetailModal } from "../components/CardMotion";
 
 const SearchPage = () => {
   const locationHook = useLocation();
@@ -18,7 +18,6 @@ const SearchPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedItem, setSelectedItem] = useState(null);
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
   const organs = ["Kidney", "Liver", "Heart", "Lungs", "Pancreas", "Eyes"];
@@ -67,223 +66,124 @@ const SearchPage = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchResults();
-
-    const searchParams = new URLSearchParams({
-      lat: coords?.[1] || "",
-      lng: coords?.[0] || "",
-      type,
-      value,
-      location: locationValue,
-    });
-    navigate({ pathname: "/search", search: searchParams.toString() }, { replace: true });
   };
 
-  const getCardClass = (item) => {
-    if (item.type === "bloodbank") return "border-blue-500 bg-blue-50";
-    if (item.type === "hospital") return "border-green-500 bg-green-50";
-    if (item.type === "donor") return "border-red-500 bg-gray-50";
+  const getCardStyle = (item) => {
+    if (item.type === "hospital") return "border-green-300 bg-green-50";
+    if (item.type === "bloodbank") return "border-red-300 bg-red-50";
+    if (item.type === "donor") return "border-blue-300 bg-blue-50";
     return "";
   };
 
-  const renderLocationLink = (location) =>
-    location ? (
-      <a
-        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:underline"
-      >
-        {location}
-      </a>
-    ) : (
-      "N/A"
-    );
+  const renderCard = (item) => (
+    <div
+      key={item.id || item.name}
+      className={`rounded-xl shadow-md p-4 border-l-8 ${getCardStyle(item)} flex flex-col gap-3 hover:shadow-lg transition`}
+    >
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          {item.type === "hospital" && <FaHospital className="text-green-400 text-2xl" />}
+          {item.type === "bloodbank" && <FaTint className="text-red-400 text-2xl" />}
+          {item.type === "donor" && <FaHeartbeat className="text-blue-400 text-2xl" />}
+          <span className="font-semibold capitalize">{item.type}</span>
+        </div>
+        {item.distance && (
+          <div className="text-gray-500 font-medium text-sm">{(item.distance / 1000).toFixed(1)} km</div>
+        )}
+      </div>
 
-  const renderCardContent = (item) => (
-    <div className="text-center space-y-1">
-      <h3
-        className={`text-xl font-bold ${
-          item.type === "bloodbank"
-            ? "text-blue-600"
-            : item.type === "hospital"
-            ? "text-green-600"
-            : "text-red-600"
-        }`}
-      >
-        {item.name}{" "}
-        {item.type === "bloodbank"
-          ? "(Blood Bank)"
-          : item.type === "hospital"
-          ? "(Hospital)"
-          : "(Donor)"}
-      </h3>
+      <h3 className="text-xl font-bold truncate">{item.name}</h3>
 
-      {item.type === "donor" && (
-        <>
-          {item.bloodGroup && (
-            <p>
-              <span className="font-semibold">Blood:</span> {item.bloodGroup}
-            </p>
-          )}
-          {item.organ && (
-            <p>
-              <span className="font-semibold">Organ:</span> {item.organ}
-            </p>
-          )}
-          <p>
-            <span className="font-semibold">Contact:</span>{" "}
-            {item.phone || item.email || "N/A"}
-          </p>
-        </>
-      )}
+      <div className="flex flex-wrap gap-3 items-center text-gray-600 text-sm">
+        <div className="flex items-center gap-1"><FaMapMarkerAlt /> {item.location || "N/A"}</div>
+        {item.type === "donor" && item.bloodGroup && <div className="flex items-center gap-1"><FaTint /> {item.bloodGroup}</div>}
+        {item.type === "donor" && item.organ && <div className="flex items-center gap-1"><FaHeartbeat /> {item.organ}</div>}
+        {item.type === "bloodbank" && item.bloodInventory && <div className="flex items-center gap-1"><FaTint /> Stock</div>}
+      </div>
 
-      {item.type === "bloodbank" && item.bloodInventory && (
-        <p className="truncate">
-          <span className="font-semibold">Stock:</span>{" "}
-          {Object.entries(item.bloodInventory)
-            .filter(([_, qty]) => qty > 0)
-            .map(([bg, qty]) => `${bg}: ${qty}L`)
-            .join(", ")}
-        </p>
-      )}
-
-      {item.type === "hospital" && (
-        <p>
-          <span className="font-semibold">Services:</span> Blood Bank & Organ
-          Transplant
-        </p>
-      )}
-
-      <p>
-        <span className="font-semibold">Location:</span>{" "}
-        {renderLocationLink(item.location)}
-      </p>
-
-      {item.distance !== undefined && (
-        <p>
-          <span className="font-semibold">Dist:</span>{" "}
-          {(item.distance / 1000).toFixed(1)} km
-        </p>
+      {item.phone && (
+        <a
+          href={`tel:${item.phone}`}
+          className="mt-2 bg-red-400 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm hover:bg-red-500 transition"
+        >
+          Call <FaPhone />
+        </a>
       )}
     </div>
   );
 
   return (
-    <div
-      className="min-h-screen bg-white py-10 px-4 relative"
-      style={{ paddingTop: "calc(8rem + env(safe-area-inset-top))" }}
+    <motion.div
+      className="min-h-screen bg-gray-50 p-6 pt-36" // pt-36 pushes content below header
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      <h2 className="text-4xl font-bold text-700 text-center mb-10">
+      {/* Title outside the card/form */}
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-3xl font-bold text-center mb-6"
+      >
         Search Donors, Blood Banks & Hospitals
-      </h2>
+      </motion.h2>
 
       <form
         onSubmit={handleSearchSubmit}
-        className="flex flex-col md:flex-row gap-4 mb-10 justify-center items-start bg-white p-6 rounded-2xl shadow-lg max-w-5xl mx-auto"
+        className="max-w-xl mx-auto bg-white p-8 rounded-3xl shadow-lg flex flex-col gap-6"
       >
-        {/* Location Input */}
-        <div className="flex-1 flex flex-col">
-          <label className="block text-gray-700 font-medium mb-2">Location</label>
+        <div className="flex flex-col gap-4">
+          <label className="font-semibold">Location</label>
           <LocationInput
             value={locationValue}
             onSelect={({ address, lat, lng }) => {
               setLocationValue(address);
               setCoords([lng, lat]);
             }}
-            className="h-12"
           />
         </div>
 
-        {/* Type */}
-        <div className="flex-1 flex flex-col">
-          <label className="block text-gray-700 font-medium mb-2">Type</label>
+        <div className="flex flex-col gap-4">
+          <label className="font-semibold">Type</label>
           <select
             value={type}
-            onChange={(e) => {
-              setType(e.target.value);
-              setValue("");
-            }}
-            className="w-full p-3 h-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
+            onChange={(e) => { setType(e.target.value); setValue(""); }}
+            className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             <option value="blood">Blood Group</option>
             <option value="organ">Organ</option>
           </select>
         </div>
 
-        {/* Value */}
-        <div className="flex-1 flex flex-col">
-          <label className="block text-gray-700 font-medium mb-2">Value</label>
+        <div className="flex flex-col gap-4">
+          <label className="font-semibold">Value</label>
           <Select
-            label=""
             options={type === "blood" ? bloodGroups : organs}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="h-12"
           />
         </div>
 
-        {/* Filter */}
-        <div className="flex-1 flex flex-col">
-          <label className="block text-gray-700 font-medium mb-2">Show</label>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="w-full p-3 h-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
-          >
-            <option value="both">All</option>
-            <option value="donor">Donors Only</option>
-            <option value="bloodbank">Blood Banks Only</option>
-            <option value="hospital">Hospitals Only</option>
-          </select>
-        </div>
+        <button
+          type="submit"
+          className="bg-red-400 text-white py-3 rounded-xl font-bold hover:bg-red-500 transition"
+        >
+          Search
+        </button>
 
-        {/* Submit */}
-        <div className="flex items-end">
-          <button
-            type="submit"
-            className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold shadow hover:bg-red-700 transition h-12"
-          >
-            Search
-          </button>
-        </div>
+        {loading && <p className="text-red-400 text-center animate-pulse">Loading results...</p>}
+        {error && <p className="text-red-400 text-center">{error}</p>}
       </form>
 
-      {loading && (
-        <div className="text-center text-red-700 font-semibold mb-4 animate-pulse">
-          Loading results...
+      {results.length > 0 && (
+        <div className="max-w-6xl mx-auto mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {results
+            .filter((item) => filterType === "both" || filterType === item.type)
+            .map((item) => renderCard(item))}
         </div>
       )}
-      {error && (
-        <div className="text-center text-red-700 font-semibold mb-4">{error}</div>
-      )}
-      {results.length === 0 && !loading && !error && (
-        <p className="text-center text-gray-500">No results found.</p>
-      )}
-
-      {/* Results */}
-      <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
-        {results
-          .filter((item) => filterType === "both" || filterType === item.type)
-          .map((item, idx) => (
-            <ResultCard
-              key={idx}
-              item={{ ...item, children: renderCardContent(item) }}
-              onClick={() => setSelectedItem(item)}
-              className={`border-t-4 ${getCardClass(item)}`}
-            />
-          ))}
-      </div>
-
-      {/* Detail Modal */}
-      <AnimatePresence>
-        {selectedItem && (
-          <DetailModal
-            item={{ ...selectedItem, children: renderCardContent(selectedItem) }}
-            onClose={() => setSelectedItem(null)}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };
 
