@@ -62,12 +62,13 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-50 via-red-100 to-white flex items-center justify-center py-10 px-4">
-      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-lg">
-        <h1 className="text-3xl font-extrabold text-red-700 text-center mb-8">
-          Register as a Donor
-        </h1>
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center py-10 px-4">
+      {/* Title moved outside the card */}
+      <h1 className="text-3xl font-bold text-red-700 text-center mb-8">
+        Register as a Donor
+      </h1>
 
+      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-lg">
         {error && (
           <p className="text-center text-red-700 font-semibold mb-6">{error}</p>
         )}
