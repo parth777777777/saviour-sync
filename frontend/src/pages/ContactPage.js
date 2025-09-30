@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { FaUser, FaEnvelope, FaCommentDots } from "react-icons/fa";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -38,77 +39,109 @@ const ContactPage = () => {
 
   return (
     <motion.div
-      className="bg-gray-50 min-h-screen pt-32 px-4"
+      className="min-h-screen w-full bg-white flex flex-col items-center justify-start pt-32 px-4"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <motion.h2
+      {/* Title & Subtitle outside card */}
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-4xl font-bold text--700 mb-4 text-center"
+        className="text-center mb-8 max-w-2xl"
       >
-        Contact Us
-      </motion.h2>
+        <h2 className="text-4xl font-bold text-red-700 mb-4">Get in Touch</h2>
+        <p className="text-gray-600">
+          Questions, feedback, or urgent messages? Reach out and we'll respond as soon as possible.
+        </p>
+      </motion.div>
 
-      <p className="text-center text-gray-600 max-w-2xl mx-auto mb-8">
-        We'd love to hear from you! Questions, feedback, or stories – reach out and we'll respond as soon as possible.
-      </p>
-
-      <motion.form
-        onSubmit={handleSubmit}
+      {/* Form Card */}
+      <motion.div
+        className="bg-white rounded-3xl shadow-2xl p-12 w-full max-w-3xl"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="max-w-lg mx-auto bg-white p-10 rounded-2xl shadow-xl space-y-6"
       >
-        <input
-          type="text"
-          name="name"
-          placeholder="Your Name"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Your Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
-          required
-        />
-        <textarea
-          name="message"
-          placeholder="Your Message"
-          value={formData.message}
-          onChange={handleChange}
-          className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 h-40 resize-none"
-          required
-        />
-
-        {success && (
-          <div className="text-green-700 font-semibold text-center">
-            ✅ Message sent successfully!
-          </div>
-        )}
-        {error && (
-          <div className="text-red-700 font-semibold text-center">
-            ❌ {error}
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-red-700 text-white py-3 rounded-xl font-semibold shadow hover:bg-red-800 transition"
+        <motion.form
+          onSubmit={handleSubmit}
+          className="space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          {loading ? "Sending..." : "Send Message"}
-        </button>
-      </motion.form>
+          {/* Name Input */}
+          <div className="relative">
+            <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              name="name"
+              placeholder="Your Name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full p-4 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
+              required
+            />
+          </div>
+
+          {/* Email Input */}
+          <div className="relative">
+            <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-4 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
+              required
+            />
+          </div>
+
+          {/* Message Input */}
+          <div className="relative">
+            <FaCommentDots className="absolute left-3 top-3 text-gray-400" />
+            <textarea
+              name="message"
+              placeholder="Your Message"
+              value={formData.message}
+              onChange={handleChange}
+              className="w-full p-4 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 h-48 resize-none"
+              required
+            />
+          </div>
+
+          {/* Success & Error Messages */}
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-green-700 font-semibold text-center"
+            >
+              ✅ Message sent successfully!
+            </motion.div>
+          )}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-red-700 font-semibold text-center"
+            >
+              ❌ {error}
+            </motion.div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-red-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-red-700 transition"
+          >
+            {loading ? "Sending..." : "Send Message"}
+          </button>
+        </motion.form>
+      </motion.div>
     </motion.div>
   );
 };
