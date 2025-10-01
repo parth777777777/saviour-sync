@@ -1,8 +1,63 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Select from "../components/Select";
-import LocationInput from "../components/LocationInput";
 import { motion } from "framer-motion";
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
+import Select from "../components/Select";
+
+// Custom LocationInput with modern dropdown (same as SearchPage)
+import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
+
+const CustomLocationInput = ({ value, onSelect, placeholder }) => {
+  const {
+    ready,
+    value: inputValue,
+    suggestions: { status, data },
+    setValue,
+    clearSuggestions,
+  } = usePlacesAutocomplete({
+    requestOptions: {},
+    debounce: 300,
+    defaultValue: value || "",
+  });
+
+  const handleSelect = async (address) => {
+    setValue(address, false);
+    clearSuggestions();
+    try {
+      const results = await getGeocode({ address });
+      const { lat, lng } = await getLatLng(results[0]);
+      onSelect({ address, lat, lng });
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
+
+  return (
+    <div className="relative w-full">
+      <input
+        value={inputValue}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={!ready}
+        placeholder={placeholder}
+        className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
+      />
+      <FaMapMarkerAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+      {status === "OK" && data.length > 0 && (
+        <ul className="absolute z-10 w-full bg-white shadow-lg rounded-xl mt-1 max-h-60 overflow-auto">
+          {data.map(({ place_id, description }) => (
+            <li
+              key={place_id}
+              onClick={() => handleSelect(description)}
+              className="p-3 cursor-pointer hover:bg-red-100"
+            >
+              {description}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -44,15 +99,16 @@ const RegisterPage = () => {
 
       const response = await fetch("http://localhost:5000/api/donors", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Failed to register donor");
+      if (!response.ok)
+        throw new Error(data.message || "Failed to register donor");
 
       navigate("/search");
     } catch (err) {
@@ -64,17 +120,15 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center py-10 px-4">
-      {/* Title with simple fade-in */}
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-3xl font-bold text-700 text-center mb-4"
+        className="text-3xl font-bold text-center mb-4 text-red-700"
       >
         Register as a Donor
       </motion.h1>
 
-      {/* Card with subtle scale and fade-in */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -86,51 +140,48 @@ const RegisterPage = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Name</label>
+          <div className="relative">
+            <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
+              placeholder="Your Name"
               required
-              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+              className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition"
             />
           </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Email</label>
+          <div className="relative">
+            <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
+              placeholder="Your Email"
               required
-              placeholder="Enter email"
-              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+              className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition"
             />
           </div>
 
-          {/* Phone */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Phone</label>
+          <div className="relative">
+            <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
+              placeholder="Phone Number"
               required
-              placeholder="Enter phone number"
-              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+              className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition"
             />
           </div>
 
-          {/* Location */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Location</label>
-            <LocationInput
+          <div className="relative">
+            <FaMapMarkerAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none z-10" />
+            <CustomLocationInput
               value={formData.location}
               onSelect={({ address, lat, lng }) =>
                 setFormData({
@@ -139,10 +190,10 @@ const RegisterPage = () => {
                   locationCoords: { type: "Point", coordinates: [lng, lat] },
                 })
               }
+              placeholder="Enter your city or location"
             />
           </div>
 
-          {/* Blood Group */}
           <Select
             label="Blood Group"
             options={bloodGroups}
@@ -152,7 +203,6 @@ const RegisterPage = () => {
             }
           />
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
