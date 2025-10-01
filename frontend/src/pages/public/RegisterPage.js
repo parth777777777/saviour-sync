@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
-import Select from "../components/Select";
-
+import Select from "../../components/Select"
 // Custom LocationInput with modern dropdown (same as SearchPage)
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 

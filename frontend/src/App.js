@@ -12,9 +12,8 @@ import AboutPage from "./pages/public/AboutPage";
 import ContactPage from "./pages/public/ContactPage";
 import LoginPage from "./pages/public/LoginPage"; 
 import SignupPage from "./pages/public/SignupPage";
-import DonorListPage from "./pages/DonorListPage";
-import EditDonorPage from "./pages/EditDonorPage"; 
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/admin/AdminDashBoard";
+
 
 function App() {
   return (
@@ -32,34 +31,11 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/admindashbaord" element={<AdminDashboard />} />
+              <Route path="/admin" element={<AdminDashboard />} />
 
-              {/* Admin Dashboard */}
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <ProtectedRoute adminOnly={true}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
 
-              {/* Protected Routes */}
-              <Route
-                path="/donors"
-                element={
-                  <ProtectedRoute>
-                    <DonorListPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/edit/:id"
-                element={
-                  <ProtectedRoute adminOnly={true}>
-                    <EditDonorPage />
-                  </ProtectedRoute>
-                }
-              />
+              
             </Routes>
           </main>
           <Footer />
