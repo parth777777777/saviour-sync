@@ -1,10 +1,13 @@
-// middleware/admin.js
+const verifyToken = require("./verifyToken");
+
 const adminMiddleware = (req, res, next) => {
-  // req.user comes from your verifyToken middleware
-  if (!req.user || !req.user.isAdmin) {
-    return res.status(403).json({ message: "Access denied. Admins only." });
-  }
-  next();
+  // First verify JWT
+  verifyToken(req, res, () => {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied: admin only" });
+    }
+    next();
+  });
 };
 
 module.exports = adminMiddleware;
