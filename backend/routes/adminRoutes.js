@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
-const adminMiddleware = require("../middlewares/adminMiddleware");
-const logActivity = require("../middlewares/activityLogger");
+const adminMiddleware = require("../middleware/admin.js");
+const logActivity = require("../middleware/activityLogger");
 const User = require("../models/User");
 
 // -----------------------

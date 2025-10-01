@@ -1,14 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const Donor = require("../models/Donor");
-const verifyToken = require("../middleware/authMiddleware"); // JWT middleware
-const fs = require("fs");
-const path = require("path");
+const verifyToken = require("../middleware/authMiddleware"); // optional auth
 
-// --- Helper: Haversine distance in meters ---
+// --- Helper: Haversine distance (optional, can keep in combined route) ---
 function haversineMeters(lat1, lon1, lat2, lon2) {
   const toRad = (deg) => (deg * Math.PI) / 180;
-  const R = 6371000; // Earth radius in meters
+  const R = 6371000;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =
@@ -18,113 +16,83 @@ function haversineMeters(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-// --- Load bloodbanks JSON once ---
-const DATA_PATH = path.join(__dirname, "..", "data", "bloodbanks.json");
-let bloodbanks = [];
-try {
-  const raw = fs.readFileSync(DATA_PATH, "utf8");
-  bloodbanks = JSON.parse(raw);
-} catch (err) {
-  console.error("Failed to load bloodbanks.json:", err);
-}
-
-// --- Create donor (protected) ---
-router.post("/", verifyToken, async (req, res) => {
+// -------------------
+// REGISTER OR UPDATE DONOR
+// -------------------
+router.post("/register", verifyToken, async (req, res) => {
   try {
-    const { name, email, phone, location, bloodGroup, organ, locationCoords } = req.body;
+    const { bloodGroup, organs, locationCoords, age, weight, medicalConditions } = req.body;
 
-    if (!name || !email || !phone || !location || !bloodGroup) {
-      return res.status(400).json({ message: "All required fields must be provided." });
+    if (!locationCoords || !Array.isArray(locationCoords) || locationCoords.length !== 2) {
+      return res.status(400).json({ message: "Valid location coordinates required" });
     }
 
-    const donor = new Donor({
-      name,
-      email,
-      phone,
-      location,
-      bloodGroup,
-      organ: organ || null,
-      locationCoords: locationCoords || null,
-      createdBy: req.user.email,
-    });
-
-    const saved = await donor.save();
-    res.status(201).json(saved);
-  } catch (err) {
-    console.error("Error saving donor:", err);
-    res.status(400).json({ message: err.message });
-  }
-});
-
-// --- Search donors + bloodbanks ---
-router.get("/search", async (req, res) => {
-  const { lat, lng, type, value } = req.query;
-  if (!lat || !lng) return res.status(400).json({ message: "Coordinates required" });
-
-  const radiusMeters = 50 * 1000; // 50 km
-
-  try {
-    // --- Fetch donors matching type/value ---
-    let donorQuery = {
-      locationCoords: {
-        $near: {
-          $geometry: { type: "Point", coordinates: [parseFloat(lng), parseFloat(lat)] },
-          $maxDistance: radiusMeters,
-        },
-      },
-    };
-    if (type === "blood") donorQuery.bloodGroup = value;
-    if (type === "organ") donorQuery.organ = value;
-
-    const donors = await Donor.find(donorQuery).lean();
-    const donorsWithDistance = donors.map((d) => {
-      const [dLng, dLat] = d.locationCoords.coordinates;
-      return {
-        ...d,
-        distance: haversineMeters(parseFloat(lat), parseFloat(lng), dLat, dLng),
-        type: "donor",
-      };
-    });
-
-    // --- Filter bloodbanks by type/value ---
-    const bloodBanksFiltered = bloodbanks
-      .map((b) => {
-        const [bLng, bLat] = b.locationCoords.coordinates;
-        return {
-          ...b,
-          distance: haversineMeters(parseFloat(lat), parseFloat(lng), bLat, bLng),
-          type: "bloodbank",
-        };
-      })
-      .filter((b) => b.distance <= radiusMeters)
-      .filter((b) => {
-        if (!value || type !== "blood") return true;
-        const qty = b.bloodInventory?.[value];
-        return typeof qty === "number" && qty > 0;
+    // check if donor already exists for this user
+    let donor = await Donor.findOne({ userId: req.user.id });
+    if (donor) {
+      // update existing donor
+      donor.bloodGroup = bloodGroup || donor.bloodGroup;
+      donor.organs = organs || donor.organs;
+      donor.locationCoords = locationCoords || donor.locationCoords;
+      donor.age = age || donor.age;
+      donor.weight = weight || donor.weight;
+      donor.medicalConditions = medicalConditions || donor.medicalConditions;
+      await donor.save();
+    } else {
+      // create new donor
+      donor = new Donor({
+        userId: req.user.id,
+        bloodGroup,
+        organs,
+        locationCoords,
+        age,
+        weight,
+        medicalConditions,
       });
+      await donor.save();
+    }
 
-    // --- Combine and sort: bloodbanks first, then donors by distance ---
-    const combined = [...bloodBanksFiltered, ...donorsWithDistance].sort((a, b) => {
-      if (a.type === "bloodbank" && b.type !== "bloodbank") return -1;
-      if (b.type === "bloodbank" && a.type !== "bloodbank") return 1;
-      return a.distance - b.distance;
-    });
-
-    res.json(combined);
+    res.json({ message: "Donor profile saved successfully", donor });
   } catch (err) {
-    console.error("Error fetching donors/bloodbanks:", err);
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// --- Get all donors (admin) ---
+// -------------------
+// SEARCH DONORS (for combined search)
+// -------------------
 router.get("/", async (req, res) => {
+  const { type, value } = req.query;
+
   try {
-    const donors = await Donor.find();
-    res.json(donors);
+    const query = {};
+    if (type === "blood" && value) query.bloodGroup = value;
+    if (type === "organ" && value) query.organs = value;
+
+    const donors = await Donor.find(query)
+      .populate("userId", "name email") // populate user info
+      .lean();
+
+    // ensure locationCoords exists for each donor
+    const safeDonors = donors.map((d) => ({
+      _id: d._id,
+      type: "donor",
+      bloodGroup: d.bloodGroup,
+      organs: d.organs,
+      age: d.age,
+      weight: d.weight,
+      medicalConditions: d.medicalConditions,
+      name: d.userId?.name || "Unnamed",
+      email: d.userId?.email || null,
+      locationCoords: d.locationCoords || { coordinates: [0, 0] },
+      lastDonation: d.lastDonation || null,
+    }));
+
+    res.json(safeDonors);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
