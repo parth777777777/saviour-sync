@@ -27,10 +27,8 @@ router.post("/register", verifyToken, async (req, res) => {
       return res.status(400).json({ message: "Valid location coordinates required" });
     }
 
-    // check if donor already exists for this user
     let donor = await Donor.findOne({ userId: req.user.id });
     if (donor) {
-      // update existing donor
       donor.bloodGroup = bloodGroup || donor.bloodGroup;
       donor.organs = organs || donor.organs;
       donor.locationCoords = locationCoords || donor.locationCoords;
@@ -39,7 +37,6 @@ router.post("/register", verifyToken, async (req, res) => {
       donor.medicalConditions = medicalConditions || donor.medicalConditions;
       await donor.save();
     } else {
-      // create new donor
       donor = new Donor({
         userId: req.user.id,
         bloodGroup,
@@ -60,7 +57,7 @@ router.post("/register", verifyToken, async (req, res) => {
 });
 
 // -------------------
-// SEARCH DONORS (for combined search)
+// SEARCH DONORS (for combined search, no pagination)
 // -------------------
 router.get("/", async (req, res) => {
   const { type, value } = req.query;
@@ -71,10 +68,9 @@ router.get("/", async (req, res) => {
     if (type === "organ" && value) query.organs = value;
 
     const donors = await Donor.find(query)
-      .populate("userId", "name email") // populate user info
+      .populate("userId", "username email")
       .lean();
 
-    // ensure locationCoords exists for each donor
     const safeDonors = donors.map((d) => ({
       _id: d._id,
       type: "donor",
@@ -83,8 +79,9 @@ router.get("/", async (req, res) => {
       age: d.age,
       weight: d.weight,
       medicalConditions: d.medicalConditions,
-      name: d.userId?.name || "Unnamed",
+      name: d.userId?.username || "Unnamed",
       email: d.userId?.email || null,
+      location: d.location || "Unknown",
       locationCoords: d.locationCoords || { coordinates: [0, 0] },
       lastDonation: d.lastDonation || null,
     }));
