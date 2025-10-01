@@ -3,7 +3,61 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaMapMarkerAlt, FaTint, FaHeartbeat, FaPhone, FaHospital } from "react-icons/fa";
 import Select from "../components/Select";
-import LocationInput from "../components/LocationInput";
+
+// Custom LocationInput with modern dropdown
+import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
+
+const CustomLocationInput = ({ value, onSelect, placeholder }) => {
+  const {
+    ready,
+    value: inputValue,
+    suggestions: { status, data },
+    setValue,
+    clearSuggestions,
+  } = usePlacesAutocomplete({
+    requestOptions: {},
+    debounce: 300,
+    defaultValue: value || "",
+  });
+
+  const handleSelect = async (address) => {
+    setValue(address, false);
+    clearSuggestions();
+    try {
+      const results = await getGeocode({ address });
+      const { lat, lng } = await getLatLng(results[0]);
+      onSelect({ address, lat, lng });
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
+
+  return (
+    <div className="relative w-full">
+      <input
+        value={inputValue}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={!ready}
+        placeholder={placeholder}
+        className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
+      />
+      <FaMapMarkerAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+      {status === "OK" && data.length > 0 && (
+        <ul className="absolute z-10 w-full bg-white shadow-lg rounded-xl mt-1 max-h-60 overflow-auto">
+          {data.map(({ place_id, description }) => (
+            <li
+              key={place_id}
+              onClick={() => handleSelect(description)}
+              className="p-3 cursor-pointer hover:bg-red-100"
+            >
+              {description}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
 
 const SearchPage = () => {
   const locationHook = useLocation();
@@ -94,8 +148,26 @@ const SearchPage = () => {
 
       <h3 className="text-xl font-bold truncate">{item.name}</h3>
 
-      <div className="flex flex-wrap gap-3 items-center text-gray-600 text-sm">
-        <div className="flex items-center gap-1"><FaMapMarkerAlt /> {item.location || "N/A"}</div>
+      <div className="flex flex-col gap-1 text-gray-600 text-sm">
+        {item.location ? (
+          <a
+            href={
+              item.lat && item.lng
+                ? `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`
+                : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}`
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 underline hover:text-red-500"
+          >
+            <FaMapMarkerAlt /> {item.location}
+          </a>
+        ) : (
+          <div className="flex items-center gap-1">
+            <FaMapMarkerAlt /> N/A
+          </div>
+        )}
+
         {item.type === "donor" && item.bloodGroup && <div className="flex items-center gap-1"><FaTint /> {item.bloodGroup}</div>}
         {item.type === "donor" && item.organ && <div className="flex items-center gap-1"><FaHeartbeat /> {item.organ}</div>}
         {item.type === "bloodbank" && item.bloodInventory && <div className="flex items-center gap-1"><FaTint /> Stock</div>}
@@ -114,17 +186,16 @@ const SearchPage = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-gray-50 p-6 pt-36" // pt-36 pushes content below header
+      className="min-h-screen bg-gray-50 p-6 pt-36"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Title outside the card/form */}
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-3xl font-bold text-center mb-6"
+        className="text-3xl font-bold text-center mb-6 text-red-700"
       >
         Search Donors, Blood Banks & Hospitals
       </motion.h2>
@@ -135,23 +206,24 @@ const SearchPage = () => {
       >
         <div className="flex flex-col gap-4">
           <label className="font-semibold">Location</label>
-          <LocationInput
+          <CustomLocationInput
             value={locationValue}
             onSelect={({ address, lat, lng }) => {
               setLocationValue(address);
               setCoords([lng, lat]);
             }}
+            placeholder="Enter your city or location"
           />
         </div>
 
         <div className="flex flex-col gap-4">
-          <label className="font-semibold">Type</label>
+          <label className="font-semibold">Searching for</label>
           <select
             value={type}
             onChange={(e) => { setType(e.target.value); setValue(""); }}
             className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
           >
-            <option value="blood">Blood Group</option>
+            <option value="blood">Blood</option>
             <option value="organ">Organ</option>
           </select>
         </div>
