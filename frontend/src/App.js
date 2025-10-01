@@ -5,13 +5,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import GoogleMapsProvider from "./components/GoogleMapsProvider";
 
 // Pages
-import Home from "./pages/HomePage";
-import RegisterPage from "./pages/RegisterPage";
-import SearchPage from "./pages/SearchPage";
-import AboutPage from "./pages/AboutPage";
-import ContactPage from "./pages/ContactPage";
-import LoginPage from "./pages/LoginPage"; 
-import SignupPage from "./pages/SignupPage";
+import Home from "./pages/public/HomePage";
+import RegisterPage from "./pages/public/RegisterPage";
+import SearchPage from "./pages/public/SearchPage";
+import AboutPage from "./pages/public/AboutPage";
+import ContactPage from "./pages/public/ContactPage";
+import LoginPage from "./pages/public/LoginPage"; 
+import SignupPage from "./pages/public/SignupPage";
 import DonorListPage from "./pages/DonorListPage";
 import EditDonorPage from "./pages/EditDonorPage"; 
 import AdminDashboard from "./pages/AdminDashboard";

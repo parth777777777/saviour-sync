@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaMapMarkerAlt, FaTint, FaHeartbeat, FaPhone, FaHospital } from "react-icons/fa";
+<<<<<<< HEAD:frontend/src/pages/public/SearchPage.jsx
+import Select from "../../components/Select";
+import LocationInput from "../../components/LocationInput";
+=======
 import Select from "../components/Select";
 
 // Custom LocationInput with modern dropdown
@@ -58,6 +62,10 @@ const CustomLocationInput = ({ value, onSelect, placeholder }) => {
     </div>
   );
 };
+<<<<<<< HEAD:frontend/src/pages/public/SearchPage.jsx
+>>>>>>> c999dbedee24a9d1dbe40b327be53959fc28bfe0:frontend/src/pages/SearchPage.jsx
+=======
+>>>>>>> c999dbedee24a9d1dbe40b327be53959fc28bfe0:frontend/src/pages/SearchPage.jsx
 
 const SearchPage = () => {
   const locationHook = useLocation();
