@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Select from "../components/Select";
-import LocationInput from "../components/LocationInput";
+import Select from "../../components/Select";
+import LocationInput from "../../components/LocationInput";
 import { motion } from "framer-motion";
 
 const RegisterPage = () => {
