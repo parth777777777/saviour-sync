@@ -62,6 +62,9 @@ const CustomLocationInput = ({ value, onSelect, placeholder }) => {
     </div>
   );
 };
+<<<<<<< HEAD:frontend/src/pages/public/SearchPage.jsx
+>>>>>>> c999dbedee24a9d1dbe40b327be53959fc28bfe0:frontend/src/pages/SearchPage.jsx
+=======
 >>>>>>> c999dbedee24a9d1dbe40b327be53959fc28bfe0:frontend/src/pages/SearchPage.jsx
 
 const SearchPage = () => {
