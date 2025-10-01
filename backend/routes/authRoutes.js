@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const rateLimit = require("express-rate-limit");
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
-const logActivity = require("../middlewares/activityLogger");
+const logActivity = require("../middleware/activityLogger");
 
 // -----------------------
 // Rate limiter for login

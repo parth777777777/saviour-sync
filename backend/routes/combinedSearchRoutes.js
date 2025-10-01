@@ -4,7 +4,7 @@ const Donor = require("../models/Donor");
 const fs = require("fs");
 const path = require("path");
 
-// Helper: Haversine distance in meters
+// --- Helper: Haversine distance in meters ---
 function haversineMeters(lat1, lon1, lat2, lon2) {
   const toRad = (deg) => (deg * Math.PI) / 180;
   const R = 6371000; // meters
@@ -17,39 +17,36 @@ function haversineMeters(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-// Load bloodbanks JSON
+// --- Load bloodbanks JSON ---
 const bloodbanksPath = path.join(__dirname, "..", "data", "bloodbanks.json");
 let bloodbanks = [];
 try {
-  const raw = fs.readFileSync(bloodbanksPath, "utf8");
-  bloodbanks = JSON.parse(raw);
+  bloodbanks = JSON.parse(fs.readFileSync(bloodbanksPath, "utf8"));
 } catch (err) {
   console.error("Failed to load bloodbanks.json:", err);
 }
 
-// Load hospitals JSON
+// --- Load hospitals JSON ---
 const hospitalsPath = path.join(__dirname, "..", "data", "hospitals.json");
 let hospitals = [];
 try {
-  const raw = fs.readFileSync(hospitalsPath, "utf8");
-  hospitals = JSON.parse(raw);
+  hospitals = JSON.parse(fs.readFileSync(hospitalsPath, "utf8"));
 } catch (err) {
   console.error("Failed to load hospitals.json:", err);
 }
 
-// --- Search donors + bloodbanks + hospitals ---
+// --- Combined search ---
 router.get("/", async (req, res) => {
   const { lat, lng, type, value } = req.query;
   if (!lat || !lng) return res.status(400).json({ message: "Coordinates required" });
 
-  const radiusMeters = 250 * 1000; // 500 km
+  const radiusMeters = 50 * 1000; // 50 km
+  const parsedLat = parseFloat(lat);
+  const parsedLng = parseFloat(lng);
 
   try {
-    const parsedLat = parseFloat(lat);
-    const parsedLng = parseFloat(lng);
-
     // --- Donors ---
-    let donorQuery = {
+    const donorQuery = {
       locationCoords: {
         $near: {
           $geometry: { type: "Point", coordinates: [parsedLng, parsedLat] },
@@ -58,15 +55,20 @@ router.get("/", async (req, res) => {
       },
     };
     if (type === "blood") donorQuery.bloodGroup = value;
-    if (type === "organ") donorQuery.organ = value;
+    if (type === "organ") donorQuery.organs = value;
 
-    const donors = await Donor.find(donorQuery).lean();
+    const donors = await Donor.find(donorQuery)
+      .populate("userId", "username email") // <-- use username
+      .lean();
+
     const donorsWithDistance = donors.map((d) => {
       const [dLng, dLat] = d.locationCoords.coordinates;
       return {
         ...d,
         distance: haversineMeters(parsedLat, parsedLng, dLat, dLng),
         type: "donor",
+        name: d.userId?.username || null, // <-- username instead of name
+        email: d.userId?.email || null,
       };
     });
 
@@ -100,25 +102,17 @@ router.get("/", async (req, res) => {
       .filter((h) => h.distance <= radiusMeters)
       .filter((h) => {
         if (!value) return true;
-        if (type === "blood") {
-          const qty = h.bloodInventory?.[value];
-          return typeof qty === "number" && qty > 0;
-        }
-        if (type === "organ") {
-          const qty = h.organInventory?.[value];
-          return typeof qty === "number" && qty > 0;
-        }
+        if (type === "blood") return typeof h.bloodInventory?.[value] === "number" && h.bloodInventory[value] > 0;
+        if (type === "organ") return typeof h.organInventory?.[value] === "number" && h.organInventory[value] > 0;
         return true;
       });
 
-    // --- Combine and sort ---
-    const combined = [...bloodbanksFiltered, ...hospitalsFiltered, ...donorsWithDistance].sort(
-      (a, b) => {
-        const priority = { bloodbank: 1, hospital: 2, donor: 3 };
-        if (priority[a.type] !== priority[b.type]) return priority[a.type] - priority[b.type];
-        return a.distance - b.distance;
-      }
-    );
+    // --- Combine & sort ---
+    const combined = [...bloodbanksFiltered, ...hospitalsFiltered, ...donorsWithDistance].sort((a, b) => {
+      const priority = { bloodbank: 1, hospital: 2, donor: 3 };
+      if (priority[a.type] !== priority[b.type]) return priority[a.type] - priority[b.type];
+      return a.distance - b.distance;
+    });
 
     res.json(combined);
   } catch (err) {

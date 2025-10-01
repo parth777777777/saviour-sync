@@ -1,13 +1,13 @@
 const verifyToken = require("./verifyToken");
 
-const adminMiddleware = (req, res, next) => {
-  // First verify JWT
+function adminMiddleware(req, res, next) {
   verifyToken(req, res, () => {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied: admin only" });
+    if (req.user && req.user.isAdmin) {
+      next();
+    } else {
+      res.status(403).json({ message: "Access denied. Admin only." });
     }
-    next();
   });
-};
+}
 
 module.exports = adminMiddleware;

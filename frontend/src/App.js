@@ -12,10 +12,6 @@ import AboutPage from "./pages/public/AboutPage";
 import ContactPage from "./pages/public/ContactPage";
 import LoginPage from "./pages/public/LoginPage";
 import SignupPage from "./pages/public/SignupPage";
-<<<<<<< HEAD
-import AdminDashboard from "./pages/admin/AdminDashBoard";
-
-=======
 
 // User Pages
 import ProfilePage from "./pages/user/ProfilePage";
@@ -26,7 +22,6 @@ import AdminDashboard from "./pages/admin/DashboardPage";
 import ManageUsers from "./pages/admin/ManageUsersPage";
 import ManageHospitals from "./pages/admin/ManageHospitalsPage";
 import ManageBloodbanks from "./pages/admin/ManageBloodbanksPage";
->>>>>>> parth-login
 
 function App() {
   return (
@@ -47,10 +42,6 @@ function App() {
               <Route path="/admindashbaord" element={<AdminDashboard />} />
               <Route path="/admin" element={<AdminDashboard />} />
 
-<<<<<<< HEAD
-
-              
-=======
               {/* Protected User Routes */}
               <Route
                 path="/user/profile"
@@ -102,7 +93,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
->>>>>>> parth-login
             </Routes>
           </main>
           <Footer />
