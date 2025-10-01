@@ -17,6 +17,8 @@ app.use(
     credentials: true, // optional, if you use cookies
   })
 );
+app.use(errorHandler); // after all routes
+
 app.use(express.json());
 
 // Routes

@@ -4,16 +4,29 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import GoogleMapsProvider from "./components/GoogleMapsProvider";
 
-// Pages
+// Public Pages
 import Home from "./pages/public/HomePage";
 import RegisterPage from "./pages/public/RegisterPage";
 import SearchPage from "./pages/public/SearchPage";
 import AboutPage from "./pages/public/AboutPage";
 import ContactPage from "./pages/public/ContactPage";
-import LoginPage from "./pages/public/LoginPage"; 
+import LoginPage from "./pages/public/LoginPage";
 import SignupPage from "./pages/public/SignupPage";
+<<<<<<< HEAD
 import AdminDashboard from "./pages/admin/AdminDashBoard";
 
+=======
+
+// User Pages
+import ProfilePage from "./pages/user/ProfilePage";
+import UpdateProfilePage from "./pages/user/UpdateProfilePage";
+
+// Admin Pages
+import AdminDashboard from "./pages/admin/DashboardPage";
+import ManageUsers from "./pages/admin/ManageUsersPage";
+import ManageHospitals from "./pages/admin/ManageHospitalsPage";
+import ManageBloodbanks from "./pages/admin/ManageBloodbanksPage";
+>>>>>>> parth-login
 
 function App() {
   return (
@@ -34,8 +47,62 @@ function App() {
               <Route path="/admindashbaord" element={<AdminDashboard />} />
               <Route path="/admin" element={<AdminDashboard />} />
 
+<<<<<<< HEAD
 
               
+=======
+              {/* Protected User Routes */}
+              <Route
+                path="/user/profile"
+                element={
+                  <ProtectedRoute adminOnly={false}>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/user/update-profile"
+                element={
+                  <ProtectedRoute adminOnly={false}>
+                    <UpdateProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Protected Admin Routes */}
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/manage-users"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <ManageUsers />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/manage-hospitals"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <ManageHospitals />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/manage-bloodbanks"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <ManageBloodbanks />
+                  </ProtectedRoute>
+                }
+              />
+>>>>>>> parth-login
             </Routes>
           </main>
           <Footer />
