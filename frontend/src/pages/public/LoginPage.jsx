@@ -1,35 +1,36 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { FaEnvelope, FaLock } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Login failed");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // Save JWT and user info in localStorage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("username", data.username);
       localStorage.setItem("role", data.role);
-      localStorage.setItem("username", data.username || "");
 
-      if (data.role === "admin") navigate("/admin/dashboard");
-      else navigate("/");
+      navigate("/"); 
     } catch (err) {
       setError(err.message);
     } finally {
@@ -38,55 +39,75 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 px-4">
-      {/* Heading outside the card */}
-      <h2 className="text-4xl font-bold text-black-700 mb-8 text-center">
+    <motion.div
+      className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.h2
+        className="text-3xl font-bold text-red-700 mb-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         Login
-      </h2>
+      </motion.h2>
 
-      <div className="bg-white max-w-lg w-full p-10 rounded-2xl shadow-xl">
-        {error && (
-          <p className="text-red-700 mb-4 font-semibold text-center">{error}</p>
-        )}
+      <motion.form
+        onSubmit={handleLogin}
+        className="max-w-xl w-full bg-white p-8 rounded-3xl shadow-lg flex flex-col gap-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        {error && <p className="text-red-400 text-center">{error}</p>}
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        {/* Email Input */}
+        <div className="relative">
+          <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
             required
+            className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
           />
+        </div>
+
+        {/* Password Input */}
+        <div className="relative">
+          <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400"
             required
+            className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
           />
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-red-600 text-white py-3 rounded-xl font-semibold shadow hover:bg-red-700 transition"
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
+        {/* Login Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-red-400 text-white py-3 rounded-xl font-bold hover:bg-red-500 transition"
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
 
-        <p className="mt-6 text-center text-gray-700">
+        <p className="text-center text-gray-600">
           Don't have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-red-700 font-semibold hover:underline"
-          >
+          <Link to="/signup" className="text-red-700 font-semibold hover:underline">
             Sign Up
           </Link>
         </p>
-      </div>
-    </div>
+      </motion.form>
+    </motion.div>
   );
 };
 
