@@ -4,17 +4,24 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import GoogleMapsProvider from "./components/GoogleMapsProvider";
 
-// Pages
+// Public Pages
 import Home from "./pages/public/HomePage";
 import RegisterPage from "./pages/public/RegisterPage";
 import SearchPage from "./pages/public/SearchPage";
 import AboutPage from "./pages/public/AboutPage";
 import ContactPage from "./pages/public/ContactPage";
-import LoginPage from "./pages/public/LoginPage"; 
+import LoginPage from "./pages/public/LoginPage";
 import SignupPage from "./pages/public/SignupPage";
-import DonorListPage from "./pages/DonorListPage";
-import EditDonorPage from "./pages/EditDonorPage"; 
-import AdminDashboard from "./pages/AdminDashboard";
+
+// User Pages
+import ProfilePage from "./pages/user/ProfilePage";
+import UpdateProfilePage from "./pages/user/UpdateProfilePage";
+
+// Admin Pages
+import AdminDashboard from "./pages/admin/DashboardPage";
+import ManageUsers from "./pages/admin/ManageUsersPage";
+import ManageHospitals from "./pages/admin/ManageHospitalsPage";
+import ManageBloodbanks from "./pages/admin/ManageBloodbanksPage";
 
 function App() {
   return (
@@ -33,7 +40,25 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
 
-              {/* Admin Dashboard */}
+              {/* Protected User Routes */}
+              <Route
+                path="/user/profile"
+                element={
+                  <ProtectedRoute adminOnly={false}>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/user/update-profile"
+                element={
+                  <ProtectedRoute adminOnly={false}>
+                    <UpdateProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Protected Admin Routes */}
               <Route
                 path="/admin/dashboard"
                 element={
@@ -42,21 +67,27 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
-              {/* Protected Routes */}
               <Route
-                path="/donors"
+                path="/admin/manage-users"
                 element={
-                  <ProtectedRoute>
-                    <DonorListPage />
+                  <ProtectedRoute adminOnly={true}>
+                    <ManageUsers />
                   </ProtectedRoute>
                 }
               />
               <Route
-                path="/edit/:id"
+                path="/admin/manage-hospitals"
                 element={
                   <ProtectedRoute adminOnly={true}>
-                    <EditDonorPage />
+                    <ManageHospitals />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/manage-bloodbanks"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <ManageBloodbanks />
                   </ProtectedRoute>
                 }
               />
