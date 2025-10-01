@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaMapMarkerAlt, FaTint, FaHeartbeat, FaPhone, FaHospital } from "react-icons/fa";
-import Select from "../components/Select";
-import LocationInput from "../components/LocationInput";
+import Select from "../../components/Select";
+import LocationInput from "../../components/LocationInput";
 
 const SearchPage = () => {
   const locationHook = useLocation();
