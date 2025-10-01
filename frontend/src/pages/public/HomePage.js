@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import Header from "../components/Header";
+import Header from "../../components/Header";
 import { FaHeartbeat, FaHospital, FaSyringe } from "react-icons/fa";
 import { GiBlood } from "react-icons/gi";
 
