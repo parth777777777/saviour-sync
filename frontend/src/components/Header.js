@@ -70,7 +70,7 @@ const Header = () => {
 
           {/* Admin Links */}
           {isAdmin && (
-            <NavLink to="/admin" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>
+            <NavLink to="/admin/dashboard" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>
               Admin Dashboard
             </NavLink>
           )}

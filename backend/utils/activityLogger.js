@@ -8,10 +8,9 @@ if (!fs.existsSync(path.dirname(logFilePath))) {
   fs.mkdirSync(path.dirname(logFilePath), { recursive: true });
 }
 
-const logActivity = (req, res, next) => {
-  const logEntry = `${new Date().toISOString()} - ${req.method} ${req.originalUrl}\n`;
+function logActivity(action, userEmail, by) {
+  const logEntry = `${new Date().toISOString()} - ${action} by ${userEmail} (${by})\n`;
   fs.appendFileSync(logFilePath, logEntry);
-  next();
-};
+}
 
 module.exports = logActivity;

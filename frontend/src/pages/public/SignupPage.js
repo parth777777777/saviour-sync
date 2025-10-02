@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 const SignupPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,27 +14,30 @@ const SignupPage = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setErrors([]);
 
     try {
-      const signupRes = await fetch("http://localhost:5000/api/auth/signup", {
+      const res = await fetch("http://localhost:5000/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      const signupText = await signupRes.text();
-      let signupData;
-      try {
-        signupData = JSON.parse(signupText);
-      } catch {
-        console.error("Could not parse signup JSON:", signupText);
-        throw new Error("Invalid server response during signup");
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Collect validation errors from backend
+        if (data.errors && Array.isArray(data.errors)) {
+          setErrors(data.errors.map((err) => err.msg));
+        } else if (data.message) {
+          setErrors([data.message]);
+        } else {
+          setErrors(["Signup failed"]);
+        }
+        return;
       }
 
-      if (!signupRes.ok) throw new Error(signupData.message || "Signup failed");
-
-      // Auto-login after signup
+      // Auto-login after successful signup
       const loginRes = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,15 +45,18 @@ const SignupPage = () => {
       });
 
       const loginData = await loginRes.json();
-      if (!loginRes.ok) throw new Error(loginData.message || "Login failed after signup");
+      if (!loginRes.ok) {
+        setErrors([loginData.message || "Login failed after signup"]);
+        return;
+      }
 
       localStorage.setItem("token", loginData.token);
       localStorage.setItem("username", loginData.username || formData.username);
       localStorage.setItem("role", loginData.role);
 
-      navigate("/"); 
+      navigate("/");
     } catch (err) {
-      setError(err.message);
+      setErrors([err.message]);
     } finally {
       setLoading(false);
     }
@@ -79,7 +85,14 @@ const SignupPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {error && <p className="text-red-400 text-center">{error}</p>}
+        {/* Display backend validation errors */}
+        {errors.length > 0 && (
+          <div className="bg-red-100 text-red-700 p-3 rounded-xl flex flex-col gap-1">
+            {errors.map((err, i) => (
+              <p key={i}>{err}</p>
+            ))}
+          </div>
+        )}
 
         {/* Username */}
         <div className="relative">
