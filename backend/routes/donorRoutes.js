@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Donor = require("../models/Donor");
-const verifyToken = require("../middleware/authMiddleware"); // optional auth
+const verifyToken = require("../middleware/authMiddleware"); 
+const mongoose = require("mongoose");
+
 
 // --- Helper: Haversine distance (optional, can keep in combined route) ---
 function haversineMeters(lat1, lon1, lat2, lon2) {
@@ -19,42 +21,48 @@ function haversineMeters(lat1, lon1, lat2, lon2) {
 // -------------------
 // REGISTER OR UPDATE DONOR
 // -------------------
+// POST /api/donors/register
 router.post("/register", verifyToken, async (req, res) => {
   try {
-    const { bloodGroup, organs, locationCoords, age, weight, medicalConditions } = req.body;
+    const { bloodGroup, location, locationCoords, age, weight, phone, medicalConditions } = req.body;
 
+    // Validate required fields
     if (!locationCoords || !Array.isArray(locationCoords) || locationCoords.length !== 2) {
       return res.status(400).json({ message: "Valid location coordinates required" });
     }
+    if (!location) return res.status(400).json({ message: "Location is required" });
+    if (!bloodGroup) return res.status(400).json({ message: "Blood group is required" });
+    if (!age || age < 18 || age > 70) return res.status(400).json({ message: "Valid age (18-70) is required" });
+    if (!weight) return res.status(400).json({ message: "Weight is required" });
+    if (!phone) return res.status(400).json({ message: "Phone number is required" });
 
-    let donor = await Donor.findOne({ userId: req.user.id });
-    if (donor) {
-      donor.bloodGroup = bloodGroup || donor.bloodGroup;
-      donor.organs = organs || donor.organs;
-      donor.locationCoords = locationCoords || donor.locationCoords;
-      donor.age = age || donor.age;
-      donor.weight = weight || donor.weight;
-      donor.medicalConditions = medicalConditions || donor.medicalConditions;
-      await donor.save();
-    } else {
-      donor = new Donor({
-        userId: req.user.id,
-        bloodGroup,
-        organs,
-        locationCoords,
-        age,
-        weight,
-        medicalConditions,
-      });
-      await donor.save();
+    // Check if donor already exists
+    const existingDonor = await Donor.findOne({ userId: req.user.id });
+    if (existingDonor) {
+      return res.status(400).json({ message: "Donor profile already exists" });
     }
 
-    res.json({ message: "Donor profile saved successfully", donor });
+    const donor = new Donor({
+      userId: req.user.id,
+      bloodGroup,
+      organs: null, // keep organs null
+      location,
+      locationCoords: { type: "Point", coordinates: locationCoords },
+      age,
+      weight,
+      phone,
+      medicalConditions: medicalConditions || "",
+      createdBy: req.user.id,
+    });
+
+    await donor.save();
+    res.status(201).json({ message: "Donor profile created successfully", donor });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 // -------------------
 // SEARCH DONORS (for combined search, no pagination)
@@ -92,5 +100,29 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// Public route
+router.get("/public/:userId", async (req, res) => {
+  try {
+    const donor = await Donor.findOne({ userId: req.params.userId });
+    if (!donor) return res.status(404).json({ message: "Donor data not found" });
+    res.json({ donor });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// GET /api/donors/check
+router.get("/check", verifyToken, async (req, res) => {
+  try {
+    const donor = await Donor.findOne({ userId: req.user.id });
+    res.json({ exists: !!donor });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 module.exports = router;
