@@ -1,19 +1,31 @@
 const express = require("express");
 const router = express.Router();
-const verifyToken = require("../middleware/verifyToken");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const verifyToken = require("../middleware/verifyToken"); 
 
-// Get profile
-router.get("/profile", verifyToken, async (req, res) => {
-  const user = await User.findById(req.user.id).select("-password");
-  res.json(user);
+// Get current user info using token
+router.get("/me", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password -resetPasswordToken -resetPasswordExpires");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// Update profile
-router.post("/update-profile", verifyToken, async (req, res) => {
-  const updates = req.body;
-  const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true }).select("-password");
-  res.json(user);
+// Get any user by ID (optional, protected)
+router.get("/:id", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password -resetPasswordToken -resetPasswordExpires");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 module.exports = router;

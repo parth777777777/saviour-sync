@@ -2,11 +2,13 @@
 ├── data
 │   ├── bloodbanks.json
 │   └── hospitals.json
+├── logs
+│   └── activity.log
 ├── middleware
-│   ├── activityLogger.js
 │   ├── admin.js
 │   ├── authMiddleware.js
-│   └── errorHandler.js
+│   ├── errorHandler.js
+│   └── verifyToken.js
 ├── models
 │   ├── Contact.js
 │   ├── Donor.js
@@ -19,14 +21,14 @@
 │   ├── combinedSearchRoutes.js
 │   ├── contactRoutes.js
 │   ├── donorRoutes.js
-│   ├── hospitalRoutes.js
-│   ├── publicRoutes.js
 │   └── userRoutes.js
 ├── seed_users.js
 ├── server.js
 ├── structure.txt
+├── test.js
 └── utils
+    ├── activityLogger.js
     ├── api.js
     └── sendEmail.js
 
-6 directories, 24 files
+7 directories, 25 files
