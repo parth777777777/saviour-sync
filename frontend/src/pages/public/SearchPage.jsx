@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
-import { FaMapMarkerAlt, FaTint, FaHeartbeat, FaPhone, FaHospital, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaMapMarkerAlt,
+  FaTint,
+  FaHeartbeat,
+  FaPhone,
+  FaHospital,
+  FaChevronDown,
+  FaChevronUp,
+  FaBell,
+} from "react-icons/fa";
 import Select from "../../components/Select";
 import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
 
@@ -71,6 +80,7 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [expandedIds, setExpandedIds] = useState([]); // track expanded cards
+  const [notifyMessage, setNotifyMessage] = useState("");
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
   const organs = ["Kidney", "Liver", "Heart", "Lungs", "Pancreas", "Eyes"];
@@ -127,6 +137,11 @@ const SearchPage = () => {
     );
   };
 
+  const handleNotify = (name) => {
+    setNotifyMessage(`Notified ${name}!`);
+    setTimeout(() => setNotifyMessage(""), 3000);
+  };
+
   const getCardStyle = (item) => {
     if (item.type === "hospital") return "border-green-300 bg-green-50";
     if (item.type === "bloodbank") return "border-red-300 bg-red-50";
@@ -134,32 +149,74 @@ const SearchPage = () => {
     return "";
   };
 
+  const renderInventoryGrid = (inventory, isBlood = true) => {
+    if (!inventory) return null;
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+        {Object.entries(inventory).map(([key, val]) => (
+          <div
+            key={key}
+            className={`rounded-xl p-3 text-center shadow-sm ${
+              isBlood ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+            }`}
+          >
+            <p className="font-bold">{key}</p>
+            <p className="text-lg">{val}</p>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const renderCard = (item) => {
     const isExpanded = expandedIds.includes(item._id || item.id);
     return (
-      <div
+      <motion.div
         key={item._id || item.id || item.name}
-        className={`rounded-xl shadow-md p-4 border-l-8 ${getCardStyle(
+        layout
+        className={`rounded-xl shadow-sm p-5 border-l-8 ${getCardStyle(
           item
-        )} flex flex-col gap-3 hover:shadow-lg transition cursor-pointer`}
+        )} flex flex-col gap-3 transition-transform transform hover:scale-105 hover:shadow-lg cursor-pointer bg-white`}
         onClick={() => toggleExpand(item._id || item.id)}
       >
+        {/* Header */}
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            {item.type === "hospital" && <FaHospital className="text-green-400 text-2xl" />}
-            {item.type === "bloodbank" && <FaTint className="text-red-400 text-2xl" />}
-            {item.type === "donor" && <FaHeartbeat className="text-blue-400 text-2xl" />}
-            <span className="font-semibold capitalize">{item.type}</span>
+          <div className="flex items-center gap-3">
+            {item.type === "hospital" && (
+              <FaHospital className="text-green-500 text-2xl" />
+            )}
+            {item.type === "bloodbank" && (
+              <FaTint className="text-red-500 text-2xl" />
+            )}
+            {item.type === "donor" && (
+              <FaHeartbeat className="text-blue-500 text-2xl" />
+            )}
+            <span className="font-semibold text-lg capitalize">
+              {item.type}
+            </span>
           </div>
-          {item.distance && (
-            <div className="text-gray-500 font-medium text-sm">
-              {(item.distance / 1000).toFixed(1)} km
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            {item.distance && (
+              <div className="text-gray-500 font-medium text-sm">
+                {(item.distance / 1000).toFixed(1)} km
+              </div>
+            )}
+            <motion.div
+              animate={{ rotate: isExpanded ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+              className="text-gray-400"
+            >
+              <FaChevronDown />
+            </motion.div>
+          </div>
         </div>
 
-        <h3 className="text-xl font-bold truncate">{item.name || "Unnamed"}</h3>
+        {/* Name */}
+        <h3 className="text-xl font-bold truncate text-gray-800">
+          {item.name || "Unnamed"}
+        </h3>
 
+        {/* Info */}
         <div className="flex flex-col gap-1 text-gray-600 text-sm">
           {item.location && (
             <a
@@ -177,44 +234,53 @@ const SearchPage = () => {
               <FaMapMarkerAlt /> {item.location}
             </a>
           )}
-
-          {item.type === "donor" && item.bloodGroup && (
-            <div className="flex items-center gap-1">
-              <FaTint /> {item.bloodGroup}
-            </div>
-          )}
-
-          {item.type === "donor" && item.organs && item.organs.length > 0 && (
-            <div className="flex items-center gap-1">
-              <FaHeartbeat /> {item.organs.join(", ")}
-            </div>
-          )}
         </div>
 
-        {isExpanded && item.type === "donor" && (
-          <div className="mt-2 text-gray-700 text-sm flex flex-col gap-1">
-            {item.age && <div>Age: {item.age}</div>}
-            {item.lastDonation && <div>Last Donation: {new Date(item.lastDonation).toLocaleDateString()}</div>}
-            {item.weight && <div>Weight: {item.weight} kg</div>}
-            {item.medicalConditions && <div>Medical Conditions: {item.medicalConditions}</div>}
-            {item.email && <div>Email: {item.email}</div>}
-          </div>
-        )}
-
-        <div className="mt-2 flex justify-between items-center">
-          {item.phone && (
-            <a
-              href={`tel:${item.phone}`}
-              className="bg-red-400 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm hover:bg-red-500 transition"
+        {/* Expanded Section */}
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-3 text-gray-700 text-sm flex flex-col gap-2"
             >
-              Call <FaPhone />
-            </a>
+              {item.type === "donor" && (
+                <>
+                  {item.age && <div>Age: {item.age}</div>}
+                  {item.weight && <div>Weight: {item.weight} kg</div>}
+                  {item.medicalConditions && (
+                    <div>Medical Conditions: {item.medicalConditions}</div>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNotify(item.name || "Donor");
+                    }}
+                    className="bg-blue-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm hover:bg-blue-600 transition"
+                  >
+                    <FaBell /> Notify
+                  </button>
+                </>
+              )}
+              {item.type === "bloodbank" &&
+                renderInventoryGrid(item.bloodInventory, true)}
+              {item.type === "hospital" && (
+                <>
+                  <h4 className="font-semibold text-gray-800 mt-2">
+                    Blood Inventory
+                  </h4>
+                  {renderInventoryGrid(item.bloodInventory, true)}
+                  <h4 className="font-semibold text-gray-800 mt-4">
+                    Organ Inventory
+                  </h4>
+                  {renderInventoryGrid(item.organInventory, false)}
+                </>
+              )}
+            </motion.div>
           )}
-          <div className="ml-auto text-gray-500">
-            {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
-          </div>
-        </div>
-      </div>
+        </AnimatePresence>
+      </motion.div>
     );
   };
 
@@ -225,6 +291,21 @@ const SearchPage = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Notification Alert */}
+      <AnimatePresence>
+        {notifyMessage && (
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -50, opacity: 0 }}
+            className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-50"
+          >
+            {notifyMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Title */}
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -234,12 +315,16 @@ const SearchPage = () => {
         Search Donors, Blood Banks & Hospitals
       </motion.h2>
 
+      {/* Search Bar */}
       <form
         onSubmit={handleSearchSubmit}
-        className="max-w-xl mx-auto bg-white p-8 rounded-3xl shadow-lg flex flex-col gap-6"
+        className={`${
+          results.length > 0
+            ? "max-w-6xl mx-auto bg-white p-4 rounded-2xl shadow-lg flex flex-col md:flex-row gap-4 items-center sticky top-0 z-40"
+            : "max-w-xl mx-auto bg-white p-8 rounded-3xl shadow-lg flex flex-col gap-6"
+        }`}
       >
-        <div className="flex flex-col gap-4">
-          <label className="font-semibold">Location</label>
+        <div className="flex-1 w-full">
           <CustomLocationInput
             value={locationValue}
             onSelect={({ address, lat, lng }) => {
@@ -250,40 +335,39 @@ const SearchPage = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-4">
-          <label className="font-semibold">Searching for</label>
-          <select
-            value={type}
-            onChange={(e) => {
-              setType(e.target.value);
-              setValue("");
-            }}
-            className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
-          >
-            <option value="blood">Blood</option>
-            <option value="organ">Organ</option>
-          </select>
-        </div>
+        <select
+          value={type}
+          onChange={(e) => {
+            setType(e.target.value);
+            setValue("");
+          }}
+          className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
+        >
+          <option value="blood">Blood</option>
+          <option value="organ">Organ</option>
+        </select>
 
-        <div className="flex flex-col gap-4">
-          <label className="font-semibold">Value</label>
-          <Select
-            options={type === "blood" ? bloodGroups : organs}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-        </div>
+        <Select
+          options={type === "blood" ? bloodGroups : organs}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
 
         <button
           type="submit"
-          className="bg-red-400 text-white py-3 rounded-xl font-bold hover:bg-red-500 transition"
+          className="bg-red-400 text-white py-3 px-6 rounded-xl font-bold hover:bg-red-500 transition"
         >
           Search
         </button>
-
-        {loading && <p className="text-red-400 text-center animate-pulse">Loading results...</p>}
-        {error && <p className="text-red-400 text-center">{error}</p>}
       </form>
+
+      {/* Results */}
+      {loading && (
+        <p className="text-red-400 text-center animate-pulse mt-6">
+          Loading results...
+        </p>
+      )}
+      {error && <p className="text-red-400 text-center mt-6">{error}</p>}
 
       {results.length > 0 && (
         <div className="max-w-6xl mx-auto mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">

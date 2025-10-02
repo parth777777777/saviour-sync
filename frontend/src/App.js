@@ -18,10 +18,11 @@ import ProfilePage from "./pages/user/ProfilePage";
 import UpdateProfilePage from "./pages/user/UpdateProfilePage";
 
 // Admin Pages
-import AdminDashboard from "./pages/admin/DashboardPage";
+import AdminDashboard from "./pages/admin/AdminDashBoard";
 import ManageUsers from "./pages/admin/ManageUsersPage";
 import ManageHospitals from "./pages/admin/ManageHospitalsPage";
 import ManageBloodbanks from "./pages/admin/ManageBloodbanksPage";
+import ManageDonorsPage from "./pages/admin/ManageDonorsPage";
 
 function App() {
   return (
@@ -39,8 +40,6 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
-              <Route path="/admindashbaord" element={<AdminDashboard />} />
-              <Route path="/admin" element={<AdminDashboard />} />
 
               {/* Protected User Routes */}
               <Route
@@ -67,6 +66,14 @@ function App() {
                   <ProtectedRoute adminOnly={true}>
                     <AdminDashboard />
                   </ProtectedRoute>
+                }
+              />
+              <Route 
+                path="/admin/manage-donors"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <ManageDonorsPage />
+                    </ ProtectedRoute>
                 }
               />
               <Route

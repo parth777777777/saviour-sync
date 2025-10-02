@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const adminMiddleware = require("../middleware/admin.js");
-const logActivity = require("../middleware/activityLogger");
+const logActivity = require("../utils/activityLogger.js");
 const User = require("../models/User");
 
 // -----------------------

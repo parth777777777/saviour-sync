@@ -73,7 +73,7 @@ const LoginPage = () => {
             onChange={handleChange}
             placeholder="Email"
             required
-            className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300 transition"
           />
         </div>
 
@@ -87,18 +87,19 @@ const LoginPage = () => {
             onChange={handleChange}
             placeholder="Password"
             required
-            className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300 transition"
           />
         </div>
 
         {/* Login Button */}
-        <button
+        <motion.button
           type="submit"
           disabled={loading}
+          whileTap={{ scale: 0.95 }}
           className="bg-red-400 text-white py-3 rounded-xl font-bold hover:bg-red-500 transition"
         >
           {loading ? "Logging in..." : "Login"}
-        </button>
+        </motion.button>
 
         <p className="text-center text-gray-600">
           Don't have an account?{" "}

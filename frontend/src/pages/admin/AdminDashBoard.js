@@ -1,33 +1,41 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaHospital, FaTint } from "react-icons/fa";
+import { FaUser, FaHospital, FaTint , FaUsers} from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
   const cards = [
+      {
+      title: "Manage Users",
+      icon: <FaUsers />,
+      route: "/admin/manage-users",
+      bgColor: "bg-yellow-50",
+      iconColor: "text-yellow-500",
+    },
     {
       title: "Manage Donors",
       icon: <FaUser />,
-      route: "/admin/donors",
+      route: "/admin/manage-donors",
       bgColor: "bg-red-50",
       iconColor: "text-red-500",
     },
     {
       title: "Manage Blood Banks",
       icon: <FaTint />,
-      route: "/admin/bloodbanks",
+      route: "/admin/manage-bloodbanks",
       bgColor: "bg-blue-50",
       iconColor: "text-blue-500",
     },
     {
       title: "Manage Hospitals",
       icon: <FaHospital />,
-      route: "/admin/hospitals",
+      route: "/admin/manage-hospitals",
       bgColor: "bg-green-50",
       iconColor: "text-green-500",
     },
+
   ];
 
   return (
@@ -46,47 +54,36 @@ const AdminDashboard = () => {
         Admin Dashboard
       </motion.h1>
 
-      <div className="grid md:grid-cols-3 gap-10 w-full max-w-6xl">
+      <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-10 w-full max-w-6xl">
         {cards.map((card, index) => (
-          <motion.div
+          <div
             key={index}
             onClick={() => navigate(card.route)}
-            whileHover={{ scale: 1.05, boxShadow: "0px 20px 40px rgba(0,0,0,0.15)" }}
-            whileTap={{ scale: 0.97 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2, duration: 0.6 }}
-            className={`cursor-pointer relative rounded-3xl shadow-lg overflow-hidden ${card.bgColor} p-12 flex flex-col items-center justify-center hover:shadow-xl transition`}
+            className={`cursor-pointer relative rounded-3xl overflow-hidden ${card.bgColor} 
+                        p-8 flex flex-col items-center justify-center shadow-md hover:shadow-xl
+                        transition-shadow duration-300 transform-gpu group`}
           >
             {/* Icon */}
-            <motion.div
-              className={`mb-5 p-6 rounded-full bg-white shadow-md ${card.iconColor} text-3xl flex items-center justify-center`}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: index * 0.2 + 0.2, duration: 0.5 }}
+            <div
+              className={`mb-4 p-4 rounded-full bg-white shadow-sm ${card.iconColor} text-2xl
+                          flex items-center justify-center transform transition-transform duration-300
+                          group-hover:scale-110 group-hover:rotate-3`}
             >
               {card.icon}
-            </motion.div>
+            </div>
 
             {/* Title */}
-            <motion.h2
-              className="text-2xl font-semibold text-gray-900 text-center"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2 + 0.3, duration: 0.6 }}
+            <h2
+              className="text-xl font-semibold text-gray-900 text-center transition-colors
+                         group-hover:text-red-600"
             >
               {card.title}
-            </motion.h2>
+            </h2>
 
-            <motion.p
-              className="text-gray-600 mt-2 text-sm text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: index * 0.2 + 0.4, duration: 0.6 }}
-            >
+            <p className="text-gray-600 mt-1 text-sm text-center">
               Click to manage {card.title.toLowerCase()}
-            </motion.p>
-          </motion.div>
+            </p>
+          </div>
         ))}
       </div>
     </motion.div>
