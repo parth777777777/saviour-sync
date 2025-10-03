@@ -12,6 +12,8 @@ import AboutPage from "./pages/public/AboutPage";
 import ContactPage from "./pages/public/ContactPage";
 import LoginPage from "./pages/public/LoginPage";
 import SignupPage from "./pages/public/SignupPage";
+import ForgotPasswordPage from "./pages/public/ForgotPasswordPage";
+import PublicDonorProfile from "./pages/public/PublicDonorPage";
 
 // User Pages
 import ProfilePage from "./pages/user/ProfilePage";
@@ -40,6 +42,8 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/profile/:userId" element={<PublicDonorProfile />} />
 
               {/* Protected User Routes */}
               <Route

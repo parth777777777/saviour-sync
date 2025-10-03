@@ -54,7 +54,7 @@ const SignupPage = () => {
       localStorage.setItem("username", loginData.username || formData.username);
       localStorage.setItem("role", loginData.role);
 
-      navigate("/");
+      navigate("/user/profile");
     } catch (err) {
       setErrors([err.message]);
     } finally {

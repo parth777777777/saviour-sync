@@ -30,7 +30,7 @@ const LoginPage = () => {
       localStorage.setItem("username", data.username);
       localStorage.setItem("role", data.role);
 
-      navigate("/"); 
+      navigate("/user/profile");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -89,6 +89,16 @@ const LoginPage = () => {
             required
             className="w-full p-3 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300 transition"
           />
+        </div>
+
+        {/* Forgot Password Link */}
+        <div className="text-right">
+          <Link
+            to="/forgot-password"
+            className="text-red-700 font-semibold hover:underline text-sm"
+          >
+            Forgot Password?
+          </Link>
         </div>
 
         {/* Login Button */}
