@@ -1,5 +1,4 @@
-const Select = ({ label, options, value, onChange }) => {
-  return (
+const Select = ({ label, options, value, onChange }) => { return (
     <div className="mb-4">
       {label && (
         <label className="block text-gray-700 font-medium mb-2">{label}</label>
