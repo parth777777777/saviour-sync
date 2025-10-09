@@ -23,7 +23,7 @@ import UpdateProfilePage from "./pages/user/UpdateProfilePage";
 import AdminDashboard from "./pages/admin/AdminDashBoard";
 import ManageUsers from "./pages/admin/ManageUsersPage";
 import ManageHospitals from "./pages/admin/ManageHospitalsPage";
-import ManageBloodbanks from "./pages/admin/ManageBloodbanksPage";
+
 import ManageDonorsPage from "./pages/admin/ManageDonorsPage";
 
 function App() {
@@ -96,14 +96,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/admin/manage-bloodbanks"
-                element={
-                  <ProtectedRoute adminOnly={true}>
-                    <ManageBloodbanks />
-                  </ProtectedRoute>
-                }
-              />
+
             </Routes>
           </main>
           <Footer />

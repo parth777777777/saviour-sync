@@ -10,33 +10,41 @@ const ManageDonorsPage = () => {
   const [search, setSearch] = useState("");
   const ITEMS_PER_PAGE = 10;
 
-  const fetchDonors = async (pageNumber = 1, searchQuery = "") => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/donors?page=${pageNumber}&limit=${ITEMS_PER_PAGE}&search=${encodeURIComponent(searchQuery)}`
-      );
-      if (!res.ok) throw new Error("Failed to fetch donors");
-      const data = await res.json();
+const fetchDonors = async (pageNumber = 1, searchQuery = "") => {
+  setLoading(true);
+  setError("");
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/donors?page=${pageNumber}&limit=${ITEMS_PER_PAGE}&search=${encodeURIComponent(searchQuery)}`
+    );
+    if (!res.ok) throw new Error("Failed to fetch donors");
+    const data = await res.json();
+
+    // Handle both possible backend formats
+    if (Array.isArray(data)) {
+      setDonors(data);
+      setTotalPages(1);
+      setPage(1);
+    } else {
       setDonors(data.donors || []);
       setTotalPages(Math.ceil((data.total || 0) / ITEMS_PER_PAGE));
       setPage(data.page || 1);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchDonors(page, search);
   }, [page, search]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this donor?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/donors/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/donors/${userId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete donor");

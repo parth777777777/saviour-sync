@@ -8,16 +8,10 @@ const Header = () => {
   const username = localStorage.getItem("username") || "";
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-  let isAdmin = false;
 
-  if (token) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      isAdmin = payload.role === "admin";
-    } catch (err) {
-      console.error("Invalid token");
-    }
-  }
+  //  Check admin using localStorage
+  const role = localStorage.getItem("role") || "";
+  const isAdmin = role === "admin";
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -59,10 +53,13 @@ const Header = () => {
           <NavLink to="/about" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>About</NavLink>
           <NavLink to="/contact" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>Contact</NavLink>
 
-          {/* Admin Links */}
+          {/* Dashboard link only for admins */}
           {isAdmin && (
-            <NavLink to="/admin/dashboard" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>
-              Admin Dashboard
+            <NavLink
+              to="/admin/dashboard"
+              className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}
+            >
+              Dashboard
             </NavLink>
           )}
 

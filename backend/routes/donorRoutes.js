@@ -68,15 +68,31 @@ router.post("/register", verifyToken, async (req, res) => {
 // SEARCH DONORS (for combined search, no pagination)
 // -------------------
 router.get("/", async (req, res) => {
-  const { type, value } = req.query;
-
   try {
+    let { type, value, page = 1, limit = 10, search = "" } = req.query;
+
+    page = parseInt(page);
+    limit = parseInt(limit);
+
     const query = {};
+
     if (type === "blood" && value) query.bloodGroup = value;
     if (type === "organ" && value) query.organs = value;
 
+    // Optional search by username/email
+    if (search) {
+      query.$or = [
+        { bloodGroup: new RegExp(search, "i") },
+        { organs: new RegExp(search, "i") },
+      ];
+    }
+
+    const total = await Donor.countDocuments(query);
+
     const donors = await Donor.find(query)
       .populate("userId", "username email")
+      .skip((page - 1) * limit)
+      .limit(limit)
       .lean();
 
     const safeDonors = donors.map((d) => ({
@@ -94,12 +110,17 @@ router.get("/", async (req, res) => {
       lastDonation: d.lastDonation || null,
     }));
 
-    res.json(safeDonors);
+    res.json({
+      donors: safeDonors,
+      total,
+      page,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 // Public route
 router.get("/public/:userId", async (req, res) => {
