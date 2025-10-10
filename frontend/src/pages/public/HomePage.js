@@ -111,7 +111,7 @@ const Home = () => {
           transition={{ delay: 0.4, duration: 0.6 }}
         >
           <Link
-            to="/register"
+            to="/apply-donor"
             className="bg-red-600 text-white px-8 py-4 rounded-xl font-semibold shadow hover:bg-red-700 transition"
           >
             Join as a Donor
@@ -203,7 +203,7 @@ const Home = () => {
           transition={{ delay: 0.4, duration: 0.6 }}
         >
           <Link
-            to="/register"
+            to="/apply-donor"
             className="bg-red-600 text-white px-10 py-4 rounded-xl font-semibold shadow hover:bg-red-700 transition"
           >
             Get Started
