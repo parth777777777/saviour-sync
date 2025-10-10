@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaHospital, FaTint , FaUsers} from "react-icons/fa";
+import { FaUser, FaHospital, FaTint, FaUsers, FaClipboardList } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
   const cards = [
-      {
+    {
       title: "Manage Users",
       icon: <FaUsers />,
       route: "/admin/manage-users",
@@ -35,7 +35,13 @@ const AdminDashboard = () => {
       bgColor: "bg-green-50",
       iconColor: "text-green-500",
     },
-
+    {
+      title: "Pending Donor Applications",
+      icon: <FaClipboardList />,
+      route: "/admin/donor-verification",
+      bgColor: "bg-purple-50",
+      iconColor: "text-purple-500",
+    },
   ];
 
   return (

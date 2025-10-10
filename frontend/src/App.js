@@ -6,25 +6,26 @@ import GoogleMapsProvider from "./components/GoogleMapsProvider";
 
 // Public Pages
 import Home from "./pages/public/HomePage";
-import RegisterPage from "./pages/public/RegisterPage";
 import SearchPage from "./pages/public/SearchPage";
 import AboutPage from "./pages/public/AboutPage";
 import ContactPage from "./pages/public/ContactPage";
 import LoginPage from "./pages/public/LoginPage";
 import SignupPage from "./pages/public/SignupPage";
 import ForgotPasswordPage from "./pages/public/ForgotPasswordPage";
-import PublicDonorProfile from "./pages/public/PublicDonorPage";
+import DonorProfile from "./pages/public/DonorProfile";
 
 // User Pages
 import ProfilePage from "./pages/user/ProfilePage";
 import UpdateProfilePage from "./pages/user/UpdateProfilePage";
+import ApplyDonor from "./pages/public/ApplyDonor";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashBoard";
 import ManageUsers from "./pages/admin/ManageUsersPage";
 import ManageHospitals from "./pages/admin/ManageHospitalsPage";
-
-import ManageDonorsPage from "./pages/admin/ManageDonorsPage";
+import ManageDonors from "./pages/admin/ManageDonorsPage";
+import ManageApplications from "./pages/admin/AdminDonorApplications"
+import ManageBloodbanks from "./pages/admin/ManageBloodbanksPage";
 
 function App() {
   return (
@@ -36,15 +37,14 @@ function App() {
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
-              <Route path="/register" element={<RegisterPage />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/apply-donor" element={<ApplyDonor />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/profile/:userId" element={<PublicDonorProfile />} />
-
+              <Route path="/profile/:userId" element={<DonorProfile />} />
               {/* Protected User Routes */}
               <Route
                 path="/user/profile"
@@ -72,11 +72,19 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route 
-                path="/admin/manage-donors"
+              <Route
+                path="/admin/dashboard"
                 element={
                   <ProtectedRoute adminOnly={true}>
-                    <ManageDonorsPage />
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route 
+                path="/admin/donor-verification"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <ManageApplications />
                     </ ProtectedRoute>
                 }
               />
@@ -96,7 +104,22 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
+              <Route
+                path="/admin/manage-bloodbanks"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <ManageBloodbanks />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/manage-donors"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <ManageDonors />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </main>
           <Footer />

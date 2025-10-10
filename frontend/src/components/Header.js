@@ -1,17 +1,20 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { useState, useEffect, useRef } from "react";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username") || "";
+  const role = localStorage.getItem("role") || "";
+  const verified = localStorage.getItem("verified") === "true";
+
+  // Admin check (case-insensitive)
+  const isAdmin = role?.toLowerCase() === "admin";
+
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-
-  //  Check admin using localStorage
-  const role = localStorage.getItem("role") || "";
-  const isAdmin = role === "admin";
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -32,9 +35,25 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleApplyAsDonor = () => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    if (verified) {
+      alert("You are already a verified donor!");
+    } else {
+      navigate("/apply-donor");
+    }
+  };
+
   const linkClasses = "px-3 py-2 rounded-md font-semibold transition duration-200";
   const activeClasses = "bg-white text-red-700 shadow-md";
   const inactiveClasses = "text-white hover:bg-red-600";
+
+  // Determine active states based on route
+  const isDonorPage = location.pathname === "/apply-donor";
 
   return (
     <header className="bg-red-700 shadow-lg fixed w-full z-50">
@@ -48,20 +67,18 @@ const Header = () => {
         {/* Navigation */}
         <nav className="flex space-x-4 items-center">
           <NavLink to="/" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>Home</NavLink>
-          <NavLink to="/register" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>Register</NavLink>
           <NavLink to="/search" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>Search</NavLink>
+
+          {/* Apply as Donor Button */}
+          <button
+            onClick={handleApplyAsDonor}
+            className={`${linkClasses} ${isDonorPage ? activeClasses : inactiveClasses}`}
+          >
+            Apply as Donor
+          </button>
+
           <NavLink to="/about" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>About</NavLink>
           <NavLink to="/contact" className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}>Contact</NavLink>
-
-          {/* Dashboard link only for admins */}
-          {isAdmin && (
-            <NavLink
-              to="/admin/dashboard"
-              className={({ isActive }) => `${linkClasses} ${isActive ? activeClasses : inactiveClasses}`}
-            >
-              Dashboard
-            </NavLink>
-          )}
 
           {/* Login / Profile Dropdown */}
           {token ? (
@@ -85,9 +102,8 @@ const Header = () => {
                 </svg>
               </button>
 
-              {/* Dropdown menu */}
               {showDropdown && (
-                <div className="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-lg overflow-hidden z-50 animate-slide-down">
+                <div className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg overflow-hidden z-50 animate-slide-down">
                   <NavLink
                     to="/user/profile"
                     className="w-full text-left px-4 py-2 text-red-700 hover:bg-red-100 transition flex items-center gap-2 font-semibold text-sm"
@@ -95,6 +111,17 @@ const Header = () => {
                   >
                     Profile
                   </NavLink>
+
+                  {/* Admin Dashboard - only visible for admins */}
+                  {isAdmin && (
+                    <NavLink
+                      to="/admin/dashboard"
+                      className="w-full text-left px-4 py-2 text-red-700 hover:bg-red-100 transition flex items-center gap-2 font-semibold text-sm"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      Admin Dashboard
+                    </NavLink>
+                  )}
 
                   <button
                     onClick={() => { handleLogout(); setShowDropdown(false); }}

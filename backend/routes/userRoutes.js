@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const verifyToken = require("../middleware/verifyToken"); 
+const DonorApplication = require("../models/DonorApplication")
 
 // Get current user info using token
 router.get("/me", verifyToken, async (req, res) => {
@@ -27,5 +28,6 @@ router.get("/:id", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 module.exports = router;

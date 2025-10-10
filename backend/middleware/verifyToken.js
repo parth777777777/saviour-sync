@@ -1,19 +1,23 @@
+// middleware/verifyToken.js
 const jwt = require("jsonwebtoken");
 
-function verifyToken(req, res, next) {
-  const token = req.header("Authorization")?.split(" ")[1]; // Expect "Bearer <token>"
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ message: "Access denied. No token provided." });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Authorization token missing or malformed" });
   }
+
+  const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // secret in .env
-    req.user = decoded; // attach decoded payload to request
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // attach payload: id, email, role
     next();
   } catch (err) {
-    res.status(400).json({ message: "Invalid token." });
+    if (err.name === "TokenExpiredError") return res.status(401).json({ message: "Token expired" });
+    return res.status(401).json({ message: "Invalid token" });
   }
-}
+};
 
 module.exports = verifyToken;

@@ -10,27 +10,36 @@ const ManageUsersPage = () => {
   const [search, setSearch] = useState("");
   const ITEMS_PER_PAGE = 10;
 
+  // -----------------------
+  // FETCH USERS
+  // -----------------------
   const fetchUsers = async (pageNumber = 1, searchQuery = "") => {
     setLoading(true);
     setError("");
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5000/api/users?page=${pageNumber}&limit=${ITEMS_PER_PAGE}&search=${encodeURIComponent(
+        `http://localhost:5000/api/admin/manage-users?page=${pageNumber}&limit=${ITEMS_PER_PAGE}&search=${encodeURIComponent(
           searchQuery
-        )}`
+        )}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include", // if backend uses cookies
+        }
       );
-      if (!res.ok) throw new Error("Failed to fetch users");
-      const data = await res.json();
 
-      if (Array.isArray(data)) {
-        setUsers(data);
-        setTotalPages(1);
-        setPage(1);
-      } else {
-        setUsers(data.users || []);
-        setTotalPages(Math.ceil((data.total || 0) / ITEMS_PER_PAGE));
-        setPage(data.page || 1);
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Failed to fetch users");
       }
+
+      const data = await res.json();
+      setUsers(data.users || []);
+      setTotalPages(Math.ceil((data.total || 0) / ITEMS_PER_PAGE));
+      setPage(data.page || 1);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -38,25 +47,46 @@ const ManageUsersPage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUsers(page, search);
-  }, [page, search]);
-
+  // -----------------------
+  // DELETE USER
+  // -----------------------
   const handleDelete = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to delete user");
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `http://localhost:5000/api/admin/manage-users/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        }
+      );
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Failed to delete user");
+      }
       fetchUsers(page, search);
     } catch (err) {
       alert(err.message);
     }
   };
 
+  // -----------------------
+  // PAGINATION HANDLERS
+  // -----------------------
   const handlePrev = () => page > 1 && setPage(page - 1);
   const handleNext = () => page < totalPages && setPage(page + 1);
+
+  // -----------------------
+  // FETCH ON PAGE OR SEARCH CHANGE
+  // -----------------------
+  useEffect(() => {
+    fetchUsers(page, search);
+  }, [page, search]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 pt-24">
@@ -75,6 +105,7 @@ const ManageUsersPage = () => {
         />
       </div>
 
+      {/* Loading / Error */}
       {loading && (
         <p className="text-center text-gray-600 animate-pulse">
           Loading users...
@@ -87,40 +118,22 @@ const ManageUsersPage = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Registered On
-              </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered On</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
 
           <tbody className="bg-white divide-y divide-gray-200">
             {users.map((user) => (
               <tr key={user._id} className="hover:bg-gray-50 transition">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.username || "Unnamed"}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email || "-"}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.role || "user"}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {user.username || "Unnamed"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {user.email || "-"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {user.role || "user"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {user.createdAt
-                    ? new Date(user.createdAt).toLocaleDateString()
-                    : "-"}
+                  {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-center text-sm flex justify-center gap-2">
                   <button

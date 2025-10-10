@@ -1,12 +1,10 @@
+// routes/auth.js
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const rateLimit = require("express-rate-limit");
-const crypto = require("crypto");
-const sendEmail = require("../utils/sendEmail");
-const logActivity = require("../utils/activityLogger");
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
@@ -15,33 +13,57 @@ const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 // -----------------------
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // max 5 attempts
+  max: 5000, // max 5 attempts
   message: "Too many login attempts, please try again later",
 });
 
+// -----------------
+// SIGNUP ROUTE
+// -----------------
 router.post(
   "/signup",
   [
     body("username").notEmpty().withMessage("Username is required"),
     body("email").isEmail().withMessage("Valid email is required"),
-    body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
+    body("password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters"),
   ],
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+      if (!errors.isEmpty())
+        return res.status(400).json({ errors: errors.array() });
 
-      const { username, email, password } = req.body;
+      let { username, email, password } = req.body;
+      email = email.toLowerCase(); // ensure lowercase for consistency
+
+      // Check if user already exists
       const existingUser = await User.findOne({ email });
-      if (existingUser) return res.status(400).json({ message: "Email already registered" });
+      if (existingUser)
+        return res.status(400).json({ message: "Email already registered" });
 
-      const user = new User({ username, email, password });
-      await user.save();
+      // Create user (pre-save hook will hash password)
+      const user = await User.create({
+        username,
+        email,
+        password,
+        role: "user", // default role
+      });
 
-      // generate JWT
-      const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: "1d" });
+      // Generate JWT
+      const token = jwt.sign(
+        { id: user._id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: "1d" }
+      );
 
-      res.status(201).json({ token, username: user.username, email: user.email });
+      res.status(201).json({
+        token,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Server error during signup" });
@@ -49,11 +71,12 @@ router.post(
   }
 );
 
-// -----------------------
-// LOGIN
-// -----------------------
+// -----------------
+// LOGIN ROUTE
+// -----------------
 router.post(
   "/login",
+  loginLimiter,
   [
     body("email").isEmail().withMessage("Valid email is required"),
     body("password").notEmpty().withMessage("Password is required"),
@@ -61,23 +84,39 @@ router.post(
   async (req, res) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+      if (!errors.isEmpty())
+        return res.status(400).json({ errors: errors.array() });
 
-      const { email, password } = req.body;
+      let { email, password } = req.body;
+      email = email.toLowerCase();
+
       const user = await User.findOne({ email });
-      if (!user || !(await user.comparePassword(password))) {
+      if (!user)
         return res.status(401).json({ message: "Invalid credentials" });
-      }
 
-      const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: "1d" });
-      res.json({ token, username: user.username, email: user.email });
+      // Compare password using model method
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch)
+        return res.status(401).json({ message: "Invalid credentials" });
+
+      const token = jwt.sign(
+        { id: user._id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: "1d" }
+      );
+
+      res.json({
+        token,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Server error during login" });
     }
   }
 );
-
 // -----------------------
 // Forgot Password
 // -----------------------
