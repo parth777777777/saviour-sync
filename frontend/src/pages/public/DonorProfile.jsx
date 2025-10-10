@@ -9,20 +9,26 @@ export default function DonorProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchDonor = async () => {
-      try {
-        const res = await fetch(`/api/donor/public/${userId}`);
-        const data = await res.json();
+useEffect(() => {
+  const fetchDonor = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/donor/public/${userId}`);
 
-        if (!res.ok) throw new Error(data.message || "Failed to fetch donor data");
-        setDonor(data.donor);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const text = await res.text(); // read raw text first
+      console.log("Raw response:", text);
+
+      const data = JSON.parse(text); // try parsing manually
+      if (!res.ok) throw new Error(data.message || "Failed to fetch donor data");
+      setDonor(data.donor);
+    } catch (err) {
+      console.error("Error fetching donor:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+ 
 
     fetchDonor();
   }, [userId]);
