@@ -47,7 +47,7 @@ function App() {
               <Route path="/profile/:userId" element={<DonorProfile />} />
               {/* Protected User Routes */}
               <Route
-                path="/user/profile"
+                path="/user/profile/me"
                 element={
                   <ProtectedRoute adminOnly={false}>
                     <ProfilePage />

@@ -3,6 +3,7 @@ import { FaHeartbeat, FaMapMarkerAlt, FaPhone, FaBell, FaUser } from "react-icon
 import { useNavigate } from "react-router-dom";
 
 const DonorCard = ({ item }) => {
+  console.log("Donor item:", item);
   const navigate = useNavigate();
 
   const handleCall = () => {

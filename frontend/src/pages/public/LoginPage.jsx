@@ -30,7 +30,7 @@ const LoginPage = () => {
       localStorage.setItem("username", data.username);
       localStorage.setItem("role", data.role);
 
-      navigate("/user/profile");
+      navigate("/user/profile/me");
     } catch (err) {
       setError(err.message);
     } finally {

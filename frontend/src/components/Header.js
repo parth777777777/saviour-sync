@@ -105,7 +105,7 @@ const Header = () => {
               {showDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg overflow-hidden z-50 animate-slide-down">
                   <NavLink
-                    to="/user/profile"
+                    to="/user/profile/me"
                     className="w-full text-left px-4 py-2 text-red-700 hover:bg-red-100 transition flex items-center gap-2 font-semibold text-sm"
                     onClick={() => setShowDropdown(false)}
                   >
