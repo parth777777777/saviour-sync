@@ -25,7 +25,7 @@ import ManageUsers from "./pages/admin/ManageUsersPage";
 import ManageHospitals from "./pages/admin/ManageHospitalsPage";
 import ManageDonors from "./pages/admin/ManageDonorsPage";
 import ManageApplications from "./pages/admin/AdminDonorApplications"
-import ManageBloodbanks from "./pages/admin/ManageBloodbanksPage";
+import ManageBloodbanksPage from "./pages/admin/ManageBloodbanksPage.jsx";
 
 function App() {
   return (
@@ -108,7 +108,7 @@ function App() {
                 path="/admin/manage-bloodbanks"
                 element={
                   <ProtectedRoute adminOnly={true}>
-                    <ManageBloodbanks />
+                    <ManageBloodbanksPage />
                   </ProtectedRoute>
                 }
               />
