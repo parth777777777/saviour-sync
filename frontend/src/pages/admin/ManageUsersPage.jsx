@@ -18,7 +18,7 @@ const ManageUsersPage = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5000/api/admin/manage-users?page=${pageNumber}&limit=${ITEMS_PER_PAGE}&search=${encodeURIComponent(searchQuery)}`,
+        `${process.env.REACT_APP_API_URL}/api/admin/manage-users?page=${pageNumber}&limit=${ITEMS_PER_PAGE}&search=${encodeURIComponent(searchQuery)}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -50,7 +50,7 @@ const ManageUsersPage = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5000/api/admin/manage-users/${userId}`,
+        `${process.env.REACT_APP_API_URL}/api/admin/manage-users/${userId}`,
         {
           method: "DELETE",
           headers: {

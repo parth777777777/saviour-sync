@@ -17,7 +17,7 @@ const ManageDonorsPage = () => {
     setError("");
     try {
       const res = await fetch(
-        `http://localhost:5000/api/donors?page=${pageNumber}&limit=${ITEMS_PER_PAGE}&search=${encodeURIComponent(searchQuery)}`
+        `${process.env.REACT_APP_API_URL}/api/donors?page=${pageNumber}&limit=${ITEMS_PER_PAGE}&search=${encodeURIComponent(searchQuery)}`
       );
       if (!res.ok) throw new Error("Failed to fetch donors");
       const data = await res.json();
@@ -46,7 +46,7 @@ const ManageDonorsPage = () => {
   const handleDelete = async (donorId) => {
     if (!window.confirm("Are you sure you want to delete this donor?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/donors/${donorId}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/donors/${donorId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete donor");

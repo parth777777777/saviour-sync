@@ -24,7 +24,7 @@ const SearchPage = () => {
     setError("");
 
     try {
-      const url = new URL("http://localhost:5000/api/search");
+      const url = new URL(`${process.env.REACT_APP_API_URL}/api/search`);
       url.searchParams.append("lat", coords.lat);
       url.searchParams.append("lng", coords.lng);
       url.searchParams.append("type", type);

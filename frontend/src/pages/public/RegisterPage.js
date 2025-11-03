@@ -72,7 +72,7 @@ const RegisterPage = () => {
     // Check if user is already a donor
     const checkDonor = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/donors/check", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/donors/check`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -102,7 +102,7 @@ const RegisterPage = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/donors/register", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/donors/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(formData),

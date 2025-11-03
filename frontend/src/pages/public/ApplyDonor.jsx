@@ -70,7 +70,7 @@ const ApplyDonor = () => {
 };
 
 
-      const res = await fetch("http://localhost:5000/api/donors/apply-donor", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/donors/apply-donor`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

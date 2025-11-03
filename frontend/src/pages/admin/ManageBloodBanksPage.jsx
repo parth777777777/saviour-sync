@@ -16,7 +16,7 @@ const ManageBloodbanksPage = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/admin/manage-bloodbanks", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/manage-bloodbanks`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch blood banks");
@@ -43,7 +43,7 @@ const ManageBloodbanksPage = () => {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/admin/manage-bloodbanks", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/manage-bloodbanks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +78,7 @@ const ManageBloodbanksPage = () => {
     if (!window.confirm("Are you sure you want to delete this blood bank?")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/admin/manage-bloodbanks/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/manage-bloodbanks/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

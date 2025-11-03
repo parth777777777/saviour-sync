@@ -20,35 +20,35 @@ const AdminDashboard = () => {
         const token = localStorage.getItem("token");
         
         // Fetch users count
-        const usersRes = await fetch("http://localhost:5000/api/admin/manage-users?limit=1", {
+        const usersRes = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/manage-users?limit=1`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const usersData = await usersRes.json();
         const usersCount = usersData.total || 0;
 
         // Fetch donors count
-        const donorsRes = await fetch("http://localhost:5000/api/donors?limit=1", {
+        const donorsRes = await fetch(`${process.env.REACT_APP_API_URL}/api/donors?limit=1`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const donorsData = await donorsRes.json();
         const donorsCount = Array.isArray(donorsData) ? donorsData.length : donorsData.total || 0;
 
         // Fetch blood banks count
-        const banksRes = await fetch("http://localhost:5000/api/admin/manage-bloodbanks", {
+        const banksRes = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/manage-bloodbanks`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const banksData = await banksRes.json();
         const banksCount = Array.isArray(banksData) ? banksData.length : banksData.length || 0;
 
         // Fetch hospitals count
-        const hospitalsRes = await fetch("http://localhost:5000/api/admin/manage-hospitals", {
+        const hospitalsRes = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/manage-hospitals`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const hospitalsData = await hospitalsRes.json();
         const hospitalsCount = Array.isArray(hospitalsData) ? hospitalsData.length : hospitalsData.length || 0;
 
         // Fetch pending applications count
-        const applicationsRes = await fetch("http://localhost:5000/api/admin/applications?limit=1", {
+        const applicationsRes = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/applications?limit=1`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const applicationsData = await applicationsRes.json();

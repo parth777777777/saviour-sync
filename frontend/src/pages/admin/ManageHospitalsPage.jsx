@@ -16,7 +16,7 @@ const ManageHospitalsPage = () => {
     setError("");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/admin/manage-hospitals", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/manage-hospitals`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch hospitals");
@@ -43,7 +43,7 @@ const ManageHospitalsPage = () => {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/admin/manage-hospitals", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/manage-hospitals`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,7 +79,7 @@ const ManageHospitalsPage = () => {
     if (!window.confirm("Are you sure you want to delete this hospital?")) return;
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/admin/manage-hospitals/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/manage-hospitals/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

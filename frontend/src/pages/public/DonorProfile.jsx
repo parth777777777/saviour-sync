@@ -27,7 +27,7 @@ export default function DonorProfile() {
   useEffect(() => {
     const fetchDonor = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/donors/public/${userId}`);
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/donors/public/${userId}`);
         const text = await res.text();
         const data = JSON.parse(text);
         if (!res.ok) throw new Error(data.message || "Failed to fetch donor data");
