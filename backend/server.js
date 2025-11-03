@@ -19,7 +19,10 @@ const app = express();
 // --- Middleware ---
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://saviour-sync.vercel.app"  
+    ],
     credentials: true,
   })
 );
@@ -59,3 +62,4 @@ mongoose.connection.once("open", () =>
 // --- Start Server ---
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
