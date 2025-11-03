@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import SearchBar from "../../components/search/SearchBar";
 import ResultCard from "../../components/cards/ResultCard";
