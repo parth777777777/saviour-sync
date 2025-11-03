@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaTrash, FaPlus, FaTint, FaMapMarkerAlt, FaPhone, FaSearch } from "react-icons/fa";
 
-const ManageBloodbanksPage = () => {
+const ManageBloodBanksPage = () => {
   const [bloodbanks, setBloodbanks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -344,4 +344,4 @@ const ManageBloodbanksPage = () => {
   );
 };
 
-export default ManageBloodbanksPage;
+export default ManageBloodBanksPage;
