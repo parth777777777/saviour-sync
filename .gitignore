@@ -23,8 +23,9 @@ yarn-debug.log*
 yarn-error.log*
 
 #env
-*.env
-*.env.production
-*.env.development
+.env
+.env.*
+**/.env
+**/.env.*
 
 .vscode/
