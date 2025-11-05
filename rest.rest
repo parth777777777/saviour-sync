@@ -1,0 +1,69 @@
+### Org Signup
+POST http://localhost:5000/api/org/signup
+Content-Type: application/json
+
+{
+  "orgId": "redcross-mumbai",
+  "password": "securepass123",
+  "name": "Red Cross Blood Bank Mumbai",
+  "type": "bloodbank"
+}
+
+
+
+### Org Login
+POST http://localhost:5000/api/org/login
+Content-Type: application/json
+
+{
+  "orgId": "redcross-mumbai",
+  "password": "securepass123"
+}
+
+### campaign creation
+POST http://localhost:5000/api/org/campaigns/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdJZCI6InJlZGNyb3NzLW11bWJhaSIsImlhdCI6MTc2MjM0MzI0OSwiZXhwIjoxNzYyMzY0ODQ5fQ.xxhYwG-u0EqbL3Rp9jqKgWvwX_No1L8_Z0IVZ4kyMk4
+Content-Type: application/json
+
+{
+  "name": "Monsoon Blood Drive",
+  "startDate": "2025-11-10",
+  "endDate": "2025-11-12",
+  "location": "Mumbai, Maharashtra",
+  "locationCoords": {
+    "type": "Point",
+    "coordinates": [72.8777, 19.076]
+  }
+}
+
+### Get all upcoming/ongoing campaigns
+GET http://localhost:5000/api/campaigns/view
+Content-Type: application/json
+
+### login as user
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "parth2@app.com",
+  "password": "testing"
+}
+
+### 2. Register logged-in user for a campaign
+POST http://localhost:5000/api/campaigns/690b3960fe7f61fe87aeaef5/register
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZTg0NTA1MDQ1YTc5MWRjMWIwNzE3NSIsImVtYWlsIjoicGFydGgyQGFwcC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NjIzNDU0MTcsImV4cCI6MTc2MjQzMTgxN30.l0wpa3ibxNGlHP5qK9dVsOeG50CMA4tI8t4y6OtNPVk
+Content-Type: application/json
+
+### Mark user as donated for a campaign
+POST http://localhost:5000/api/org/campaigns/690b3960fe7f61fe87aeaef5/mark-donated
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdJZCI6InJlZGNyb3NzLW11bWJhaSIsImlhdCI6MTc2MjM1MTM1NSwiZXhwIjoxNzYyMzcyOTU1fQ.5J8IvfilEzLzmDqagWn3uiwW9wE8bbTrrBgL_J-Rle4
+Content-Type: application/json
+
+{
+  "userId": "68e84505045a791dc1b07175",
+  "amount": 350,
+  "type": "Blood",
+  "location": "Mumbai, Maharashtra"
+}
+
+###

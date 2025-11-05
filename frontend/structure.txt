@@ -1,0 +1,84 @@
+.
+├── package.json
+├── package-lock.json
+├── postcss.config.js
+├── public
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── logo.png
+│   ├── manifest.json
+│   ├── mylogo.png
+│   └── robots.txt
+├── replace-localhost.js
+├── src
+│   ├── App.css
+│   ├── App.js
+│   ├── App.test.js
+│   ├── assets
+│   │   ├── logo.png
+│   │   └── nervous-bg.png
+│   ├── components
+│   │   ├── AdminHeaderLink.jsx
+│   │   ├── CardMotion.js
+│   │   ├── cards
+│   │   │   ├── BloodBankCard.jsx
+│   │   │   ├── DonorCard.jsx
+│   │   │   ├── HospitalCard.jsx
+│   │   │   └── ResultCard.jsx
+│   │   ├── DonorDetailsModal.jsx
+│   │   ├── DonorFormModal.jsx
+│   │   ├── Footer.js
+│   │   ├── GoogleMapsProvider.jsx
+│   │   ├── Header.js
+│   │   ├── Input.jsx
+│   │   ├── LocationInput.jsx
+│   │   ├── LogoutButton.jsx
+│   │   ├── MapPickerModal.jsx
+│   │   ├── org
+│   │   │   ├── CampaignsList.jsx
+│   │   │   └── OrgAuth.jsx
+│   │   ├── pagination.jsx
+│   │   ├── ProtectedRoute.jsx
+│   │   ├── search
+│   │   │   ├── CustomLocationInput.jsx
+│   │   │   └── SearchBar.jsx
+│   │   └── Select.jsx
+│   ├── index.css
+│   ├── index.js
+│   ├── logo.svg
+│   ├── pages
+│   │   ├── admin
+│   │   │   ├── AdminDashBoard.js
+│   │   │   ├── AdminDonorApplications.jsx
+│   │   │   ├── ManageBloodBanksPage.jsx
+│   │   │   ├── ManageDonorsPage.jsx
+│   │   │   ├── ManageHospitalsPage.jsx
+│   │   │   └── ManageUsersPage.jsx
+│   │   ├── org
+│   │   │   ├── CampaignForm.jsx
+│   │   │   ├── ManageCampaignPage.jsx
+│   │   │   ├── OrgCampaignsPage.jsx
+│   │   │   ├── OrgDashboardPage.jsx
+│   │   │   ├── OrgLoginPage.jsx
+│   │   │   └── OrgSignupPage.jsx
+│   │   ├── public
+│   │   │   ├── AboutPage.js
+│   │   │   ├── ApplyDonor.jsx
+│   │   │   ├── ContactPage.js
+│   │   │   ├── DonorProfile.jsx
+│   │   │   ├── ForgotPasswordPage.jsx
+│   │   │   ├── HomePage.js
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── PublicCampaignsPage.jsx
+│   │   │   ├── RegisterPage.js
+│   │   │   ├── SearchPage.jsx
+│   │   │   └── SignupPage.js
+│   │   └── user
+│   │       ├── ProfilePage.jsx
+│   │       └── UpdateProfilePage.jsx
+│   ├── reportWebVitals.js
+│   └── setupTests.js
+├── structure.txt
+└── tailwind.config.js
+
+13 directories, 69 files

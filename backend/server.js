@@ -13,6 +13,8 @@ const combinedSearchRoutes = require("./routes/combinedSearchRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const userRoutes = require("./routes/userRoutes");
 const donorRoutes = require("./routes/donorRoutes");
+const orgRoutes = require("./routes/orgRoutes");
+const campaignRoutes = require("./routes/campaignRoutes");
 
 const app = express();
 
@@ -27,6 +29,7 @@ app.use(
   })
 );
 app.use(express.json());
+const { verifyOrgToken } = require("./routes/orgRoutes");
 
 // --- Routes ---
 app.use("/api/auth", authRoutes);
@@ -35,6 +38,8 @@ app.use("/api/search", combinedSearchRoutes);
 app.use("/api/admin", adminRoutes);   
 app.use("/api/users", userRoutes);
 app.use("/api/donors", donorRoutes);
+app.use("/api/org", orgRoutes)
+app.use("/api/campaigns", campaignRoutes )
 
 // Test route
 app.get("/", (req, res) => {

@@ -13,6 +13,7 @@ import LoginPage from "./pages/public/LoginPage";
 import SignupPage from "./pages/public/SignupPage";
 import ForgotPasswordPage from "./pages/public/ForgotPasswordPage";
 import DonorProfile from "./pages/public/DonorProfile";
+import PublicCampaignsPage from "./pages/public/PublicCampaignsPage";
 
 // User Pages
 import ProfilePage from "./pages/user/ProfilePage";
@@ -24,8 +25,16 @@ import AdminDashboard from "./pages/admin/AdminDashBoard";
 import ManageUsers from "./pages/admin/ManageUsersPage";
 import ManageHospitals from "./pages/admin/ManageHospitalsPage";
 import ManageDonors from "./pages/admin/ManageDonorsPage";
-import ManageApplications from "./pages/admin/AdminDonorApplications"
+import ManageApplications from "./pages/admin/AdminDonorApplications";
 import ManageBloodBanks from "./pages/admin/ManageBloodBanksPage";
+
+// Org Pages
+import OrgLoginPage from "./pages/org/OrgLoginPage";
+import OrgSignupPage from "./pages/org/OrgSignupPage";
+import ManageCampaignPage from "./pages/org/ManageCampaignPage";
+import CampaignForm from "./pages/org/CampaignForm";
+import OrgCampaignsPage from "./pages/org/OrgCampaignsPage";
+import OrgDashboardPage from "./pages/org/OrgDashboardPage";
 
 function App() {
   return (
@@ -45,7 +54,18 @@ function App() {
               <Route path="/apply-donor" element={<ApplyDonor />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/profile/:userId" element={<DonorProfile />} />
-              {/* Protected User Routes */}
+              <Route path="/campaigns/view" element={<PublicCampaignsPage /> } />
+
+              {/* Org Routes */}
+              <Route path="/org/login" element={<OrgLoginPage />} />
+              <Route path="/org/signup" element={<OrgSignupPage />} />
+              <Route path="/org/campaigns/create" element={<CampaignForm />} />
+              <Route path="/org/campaigns/:id/manage" element={<ManageCampaignPage />} />
+              <Route path="/org/manage-campaigns" element={<OrgCampaignsPage />} />
+              <Route path="/org/dashboard" element={<OrgDashboardPage />} />
+
+
+            {/* Protected User Routes */}
               <Route
                 path="/user/profile/me"
                 element={
@@ -73,19 +93,11 @@ function App() {
                 }
               />
               <Route
-                path="/admin/dashboard"
-                element={
-                  <ProtectedRoute adminOnly={true}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route 
                 path="/admin/donor-verification"
                 element={
                   <ProtectedRoute adminOnly={true}>
                     <ManageApplications />
-                    </ ProtectedRoute>
+                  </ProtectedRoute>
                 }
               />
               <Route

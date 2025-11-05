@@ -9,7 +9,8 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -109,6 +110,23 @@ const LoginPage = () => {
           className="bg-red-400 text-white py-3 rounded-xl font-bold hover:bg-red-500 transition"
         >
           {loading ? "Logging in..." : "Login"}
+        </motion.button>
+
+        {/* Divider */}
+        <div className="flex items-center justify-center my-2">
+          <div className="h-[1px] bg-gray-200 w-full"></div>
+          <span className="px-2 text-gray-400 text-sm">or</span>
+          <div className="h-[1px] bg-gray-200 w-full"></div>
+        </div>
+
+        {/* Login as Organization Button */}
+        <motion.button
+          type="button"
+          onClick={() => navigate("/org/login")}
+          whileTap={{ scale: 0.95 }}
+          className="border-2 border-red-400 text-red-600 py-3 rounded-xl font-bold hover:bg-red-50 transition"
+        >
+          Login as Organization
         </motion.button>
 
         <p className="text-center text-gray-600">
